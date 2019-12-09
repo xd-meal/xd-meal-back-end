@@ -175,3 +175,27 @@ func GetOrderDishes(c *gin.Context) {
 		"data": dishes,
 	})
 }
+
+func UpdateUserOrder(c *gin.Context) {
+	logier := UserData{}.isLogin(c)
+	if logier == nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 0,
+			"msg":  "请先登录",
+			"data": "",
+		})
+		return
+	}
+	dish := mongo.UserDishes{}
+	//objId, _ := primitive.ObjectIDFromHex("5dea01d126a606122cf74d8b")
+	filter := bson.M{"uid": "de4db7a7cfb83e4f6a61a25"}
+	update := bson.M{
+		"$set": bson.M{"status": 3},
+	}
+	success := dish.UpdateAll(filter, update)
+	c.JSON(http.StatusOK, gin.H{
+		"code": 200,
+		"msg":  e.GetMsg(200),
+		"data": success,
+	})
+}

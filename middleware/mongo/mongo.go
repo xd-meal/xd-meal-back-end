@@ -51,17 +51,18 @@ func (o *MongoUtils) SetDb(db string) {
 	o.Db = o.Con.Database(db)
 }
 
-func (o *MongoUtils) UpdateOne(col string, filter bson.M, update bson.M) (interface{}, error) {
+func (o *MongoUtils) UpdateAll(col string, filter bson.M, update bson.M) (interface{}, error) {
 	if o.Db == nil || o.Con == nil {
 		return nil, fmt.Errorf("没有初始化连接和数据库信息！")
 	}
 	table := o.Db.Collection(col)
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
-	result, err := table.UpdateOne(ctx, filter, update)
+	result, err := table.UpdateMany(ctx, filter, update)
+	fmt.Println(result)
 	if err != nil {
 		return nil, err
 	}
-	return result.UpsertedID, nil
+	return result.ModifiedCount, nil
 }
 
 func (o *MongoUtils) FindOne(col string, filter bson.M) (bson.M, error) {
@@ -153,7 +154,16 @@ func FindOneSelected(filter bson.M, dbName string, tableName string) bson.M {
 	return result
 }
 
-//func UpdateOne(filter bson.M,update bson.M)
+func UpdateAll(filter bson.M, update bson.M, dbName string, tableName string) interface{} {
+	utils := MongoUtils{}
+	utils.OpenConn()
+	utils.SetDb(dbName)
+	result, err := utils.UpdateAll(tableName, filter, update)
+	if err != nil {
+		logging.Info(err)
+	}
+	return result
+}
 
 func (o *MongoUtils) createUniqueIndex(col string, keys ...string) {
 	table := o.Db.Collection(col)

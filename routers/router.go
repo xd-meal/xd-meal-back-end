@@ -29,6 +29,7 @@ func InitRouter() *gin.Engine {
 		apiv1.POST("/LoginOut", v1.LoginOut)
 		apiv1.POST("/CheckUserLogin", v1.CheckUserLogin)
 		apiv1.GET("/GetOrderDishes", v1.GetOrderDishes)
+		apiv1.POST("/UpdateUserOrder", v1.UpdateUserOrder)
 	}
 	return r
 }

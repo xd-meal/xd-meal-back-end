@@ -60,10 +60,6 @@ func rvSetSliceLen(rv reflect.Value, length int) {
 	rv.SetLen(length)
 }
 
-// func rvzeroaddr(t reflect.Type) reflect.Value {
-// 	return reflect.New(t).Elem()
-// }
-
 func rvZeroAddrK(t reflect.Type, k reflect.Kind) reflect.Value {
 	return reflect.New(t).Elem()
 }
@@ -71,18 +67,6 @@ func rvZeroAddrK(t reflect.Type, k reflect.Kind) reflect.Value {
 func rvConvert(v reflect.Value, t reflect.Type) (rv reflect.Value) {
 	return v.Convert(t)
 }
-
-// func rvisnilref(rv reflect.Value) bool {
-// 	return rv.IsNil()
-// }
-
-// func rvslen(rv reflect.Value) int {
-// 	return rv.Len()
-// }
-
-// func rv2rtid(rv reflect.Value) uintptr {
-// 	return rv4i(rv.Type()).Pointer()
-// }
 
 func rt2id(rt reflect.Type) uintptr {
 	return rv4i(rt).Pointer()
@@ -121,14 +105,6 @@ func isEmptyValue(v reflect.Value, tinfos *TypeInfos, deref, checkStruct bool) b
 	}
 	return false
 }
-
-// --------------------------
-// type ptrToRvMap struct{}
-
-// func (*ptrToRvMap) init() {}
-// func (*ptrToRvMap) get(i interface{}) reflect.Value {
-// 	return rv4i(i).Elem()
-// }
 
 // --------------------------
 type atomicClsErr struct {
@@ -179,25 +155,25 @@ func (x *atomicRtidFnSlice) store(p []codecRtidFn) {
 }
 
 // --------------------------
-func (n *decNaked) ru() reflect.Value {
+func (n *fauxUnion) ru() reflect.Value {
 	return rv4i(&n.u).Elem()
 }
-func (n *decNaked) ri() reflect.Value {
+func (n *fauxUnion) ri() reflect.Value {
 	return rv4i(&n.i).Elem()
 }
-func (n *decNaked) rf() reflect.Value {
+func (n *fauxUnion) rf() reflect.Value {
 	return rv4i(&n.f).Elem()
 }
-func (n *decNaked) rl() reflect.Value {
+func (n *fauxUnion) rl() reflect.Value {
 	return rv4i(&n.l).Elem()
 }
-func (n *decNaked) rs() reflect.Value {
+func (n *fauxUnion) rs() reflect.Value {
 	return rv4i(&n.s).Elem()
 }
-func (n *decNaked) rt() reflect.Value {
+func (n *fauxUnion) rt() reflect.Value {
 	return rv4i(&n.t).Elem()
 }
-func (n *decNaked) rb() reflect.Value {
+func (n *fauxUnion) rb() reflect.Value {
 	return rv4i(&n.b).Elem()
 }
 
@@ -284,6 +260,10 @@ func rvSlice(rv reflect.Value, length int) reflect.Value {
 
 // ----------------
 
+func rvSliceIndex(rv reflect.Value, i int, ti *typeInfo) reflect.Value {
+	return rv.Index(i)
+}
+
 func rvGetSliceLen(rv reflect.Value) int {
 	return rv.Len()
 }
@@ -291,6 +271,37 @@ func rvGetSliceLen(rv reflect.Value) int {
 func rvGetSliceCap(rv reflect.Value) int {
 	return rv.Cap()
 }
+
+func rvGetArrayBytesRO(rv reflect.Value, scratch []byte) (bs []byte) {
+	l := rv.Len()
+	if rv.CanAddr() {
+		return rvGetBytes(rv.Slice(0, l))
+	}
+
+	if l <= cap(scratch) {
+		bs = scratch[:l]
+	} else {
+		bs = make([]byte, l)
+	}
+	reflect.Copy(rv4i(bs), rv)
+	return
+}
+
+func rvGetArray4Slice(rv reflect.Value) (v reflect.Value) {
+	v = rvZeroAddrK(reflectArrayOf(rvGetSliceLen(rv), rv.Type().Elem()), reflect.Array)
+	reflect.Copy(v, rv)
+	return
+}
+
+func rvGetSlice4Array(rv reflect.Value, tslice reflect.Type) (v reflect.Value) {
+	return rv.Slice(0, rv.Len())
+}
+
+func rvCopySlice(dest, src reflect.Value) {
+	reflect.Copy(dest, src)
+}
+
+// ------------
 
 func rvGetBool(rv reflect.Value) bool {
 	return rv.Bool()
@@ -307,14 +318,6 @@ func rvGetTime(rv reflect.Value) time.Time {
 func rvGetString(rv reflect.Value) string {
 	return rv.String()
 }
-
-// func rvGetStringToRaw(rv reflect.Value) {
-// 	e.e.EncodeStringBytesRaw(bytesView(rv.String()))
-// }
-
-// func rvGetStringEnc(rv reflect.Value) {
-// 	e.e.EncodeStringEnc(cUTF8, rv.String())
-// }
 
 func rvGetFloat64(rv reflect.Value) float64 {
 	return rv.Float()
@@ -387,4 +390,20 @@ func mapDelete(m, k reflect.Value) {
 // all calls to mapGet or mapRange will call here to get an addressable reflect.Value.
 func mapAddressableRV(t reflect.Type, k reflect.Kind) (r reflect.Value) {
 	return // reflect.New(t).Elem()
+}
+
+// ---------- ENCODER optimized ---------------
+
+func (e *Encoder) jsondriver() *jsonEncDriver {
+	return e.e.(*jsonEncDriver)
+}
+
+// ---------- DECODER optimized ---------------
+
+func (d *Decoder) checkBreak() bool {
+	return d.d.CheckBreak()
+}
+
+func (d *Decoder) jsondriver() *jsonDecDriver {
+	return d.d.(*jsonDecDriver)
 }

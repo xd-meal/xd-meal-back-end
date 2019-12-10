@@ -99,6 +99,12 @@
 			"revisionTime": "2019-11-20T02:03:13Z"
 		},
 		{
+			"checksumSHA1": "fnAcEw9OV8vpsDKjS9imv/ZqRCc=",
+			"path": "github.com/go-playground/validator",
+			"revision": "691a5f5f25701d0a22785c982db4f22bfac47931",
+			"revisionTime": "2019-11-17T21:24:22Z"
+		},
+		{
 			"checksumSHA1": "H8wo+NR5z+VRl0wqPYpVQfC06ks=",
 			"origin": "go.mongodb.org/mongo-driver/vendor/github.com/go-stack/stack",
 			"path": "github.com/go-stack/stack",

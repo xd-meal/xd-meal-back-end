@@ -477,6 +477,12 @@
 			"revisionTime": "2019-09-06T13:31:14Z"
 		},
 		{
+			"checksumSHA1": "hcdWyC1u/0QHkpWYuhmJU4wpFCY=",
+			"path": "golang.org/x/net/idna",
+			"revision": "c0dbc17a35534bf2e581d7a942408dc936316da4",
+			"revisionTime": "2019-11-08T21:16:37Z"
+		},
+		{
 			"checksumSHA1": "MTRW5w1fGNY0KEKHo98/I9D8LsA=",
 			"origin": "go.mongodb.org/mongo-driver/vendor/golang.org/x/sync/semaphore",
 			"path": "golang.org/x/sync/semaphore",

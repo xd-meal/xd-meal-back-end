@@ -93,6 +93,12 @@
 			"revisionTime": "2019-12-09T07:04:35Z"
 		},
 		{
+			"checksumSHA1": "tK0ErQ4SpOZJK8w3ayKvnAjlMKI=",
+			"path": "github.com/go-ini/ini",
+			"revision": "6982260a37d4dd1960e67ff2aaad79a60bbab6c4",
+			"revisionTime": "2019-11-20T02:03:13Z"
+		},
+		{
 			"checksumSHA1": "H8wo+NR5z+VRl0wqPYpVQfC06ks=",
 			"origin": "go.mongodb.org/mongo-driver/vendor/github.com/go-stack/stack",
 			"path": "github.com/go-stack/stack",

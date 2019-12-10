@@ -64,7 +64,6 @@
 		},
 		{
 			"checksumSHA1": "qlEzrgKgIkh7y0ePm9BNo1cNdXo=",
-			"origin": "github.com/xd-meal-back-end/vendor/github.com/gin-contrib/sse",
 			"path": "github.com/gin-contrib/sse",
 			"revision": "43f0f29dbd2b3f0feeebff91fd9cda22db296938",
 			"revisionTime": "2019-09-05T05:13:34Z"
@@ -227,12 +226,6 @@
 			"path": "github.com/pkg/term/termios",
 			"revision": "aa71e9d9e942418fbb97d80895dcea70efed297c",
 			"revisionTime": "2019-01-09T20:30:06Z"
-		},
-		{
-			"checksumSHA1": "+VgDy8MhsBZ4tpYhfTck/qJeT1Y=",
-			"path": "github.com/syyongx/php2go",
-			"revision": "c265c351e6b33f39c7e7996ccdb03679e21741c2",
-			"revisionTime": "2019-08-06T04:16:11Z"
 		},
 		{
 			"checksumSHA1": "JWmqQjxnUg8PRe1QfYCmzAcWDvM=",
@@ -502,12 +495,6 @@
 			"path": "gopkg.in/fsnotify/fsnotify.v1",
 			"revision": "a1dbeea552b7c8df4b542c66073e393de198a800",
 			"revisionTime": "2018-05-14T19:44:41Z"
-		},
-		{
-			"checksumSHA1": "P/k5ZGf0lEBgpKgkwy++F7K1PSg=",
-			"path": "gopkg.in/go-playground/validator.v8",
-			"revision": "5f1438d3fca68893a817e4a66806cea46a9e4ebf",
-			"revisionTime": "2017-07-30T05:02:35Z"
 		},
 		{
 			"checksumSHA1": "z56sI90RWCJhiiLlOExjEARbj7I=",

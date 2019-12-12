@@ -17,7 +17,7 @@ type UserDishes struct {
 	BadEval   int                `json:"BadEval" bson:"BadEval"`       //差评
 }
 
-func (d UserDishes) CreateRow() string {
+func (d UserDishes) CreateRow() interface{} {
 	return createRow(d, "meal", "userDishes")
 }
 

@@ -2,7 +2,6 @@ package mongo
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/xd-meal-back-end/pkg/logging"
 	"github.com/xd-meal-back-end/pkg/setting"
@@ -104,7 +103,7 @@ func (o *MongoUtils) FindMore(col string, filter bson.M) ([]bson.M, error) {
 	return resultArr, nil
 }
 
-func createRow(insert interface{}, dbName string, tableName string) string {
+func createRow(insert interface{}, dbName string, tableName string) interface{} {
 	utils := MongoUtils{}
 	utils.OpenConn()
 	defer utils.Con.Disconnect(context.Background())
@@ -127,9 +126,9 @@ func createRow(insert interface{}, dbName string, tableName string) string {
 	if !suc {
 		return "err"
 	}
-	b, _ := json.Marshal(insert)
-	res := string(b)
-	return res
+	//b, _ := json.Marshal(insert)
+	//res := string(b)
+	return insert
 }
 
 func FindAllSelected(filter bson.M, dbName string, tableName string) []bson.M {

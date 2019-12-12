@@ -15,6 +15,6 @@ type UserMongo struct {
 	CreateTime time.Time          `json:"createTime" bson:"createTime"` //创建时间
 }
 
-func (d UserMongo) CreateRow() interface{} {
+func (d UserMongo) CreateRow() string {
 	return createRow(d, "meal", "user")
 }

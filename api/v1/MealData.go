@@ -33,6 +33,51 @@ func DownloadMenu(c *gin.Context) {
 }
 
 /**
+预览菜单
+*/
+func ReadMenu(c *gin.Context) {
+	file, _, err := c.Request.FormFile("file")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"msg": err})
+		return
+	}
+	data, err := middleware.ReadMenuExcel(file)
+	c.JSON(http.StatusOK, gin.H{"msg": err, "data": data})
+}
+
+/**
+导入菜单
+*/
+func ImportMenu(c *gin.Context) {
+	var param map[string][]mongo.DishesMongo
+	err := c.BindJSON(&param)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code": 417,
+			"msg":  e.GetMsg(400),
+			"data": "参数错误",
+		})
+		return
+	}
+	if param["data"] == nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code": 417,
+			"msg":  e.GetMsg(400),
+			"data": "空数据",
+		})
+		return
+	}
+	for _, v := range param["data"] {
+		v.CreateRow()
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": 200,
+		"msg":  e.GetMsg(200),
+		"data": "",
+	})
+}
+
+/**
 获取可选菜单表
 */
 func GetDishes(c *gin.Context) {

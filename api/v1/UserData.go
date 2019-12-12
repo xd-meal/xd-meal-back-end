@@ -6,14 +6,31 @@ import (
 	"fmt"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/xd-meal-back-end/middleware"
 	"github.com/xd-meal-back-end/middleware/mongo"
 	"github.com/xd-meal-back-end/pkg/e"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 	"strconv"
 )
 
 type UserData struct {
+}
+
+func ImportUser(c *gin.Context) {
+	file, _, err := c.Request.FormFile("file")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"msg": err})
+		return
+	}
+	data, err := middleware.ImportUser(file)
+	for _, v := range data {
+		insert := mongo.UserMongo{ID: primitive.NewObjectID(), Name: v.Name, Email: v.Email,
+			PassWord: fmt.Sprintf("%x", md5.Sum([]byte(v.PassWord))), Type: v.Type, Depart: v.Depart, CreateTime: v.CreateTime}
+		insert.CreateRow()
+	}
+	c.JSON(http.StatusOK, gin.H{"msg": err, "data": data})
 }
 
 func Login(c *gin.Context) {

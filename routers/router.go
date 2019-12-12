@@ -3,8 +3,9 @@ package routers
 import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
-	"github.com/gin-gonic/gin"
 	v1 "github.com/xd-meal-back-end/api/v1"
+	//"github.com/xd-meal-back-end/service/test_service"
+	"github.com/gin-gonic/gin"
 	_ "github.com/xd-meal-back-end/docs"
 )
 
@@ -29,8 +30,6 @@ func InitRouter() *gin.Engine {
 		apiv1.POST("/CheckUserLogin", v1.CheckUserLogin)
 		apiv1.GET("/GetOrderDishes", v1.GetOrderDishes)
 		apiv1.POST("/UpdateUserOrder", v1.UpdateUserOrder)
-		apiv1.GET("/GetOrderSwitch", v1.GetOrderSwitch)
-		apiv1.POST("/EnableOrderSwitch", v1.EnableOrderSwitch)
 	}
 	return r
 }

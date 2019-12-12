@@ -18,6 +18,6 @@ type DishesMongo struct {
 	Status     int                `json:"status" bson:"status"`         //0-开启 1-关闭
 }
 
-func (d DishesMongo) CreateRow() interface{} {
+func (d DishesMongo) CreateRow() string {
 	return createRow(d, "meal", "dishes")
 }

@@ -7,11 +7,13 @@ import (
 )
 
 type Switches struct {
-	ID         primitive.ObjectID `bson:"_id,omitempty"`
-	Name       string             `json:"name" bson:"name"`
-	Enable     int                `json:"enable" bson:"enable"`
-	CreateTime time.Time          `json:"createTime" bson:"createTime"` //创建时间
-	UpdateTime time.Time          `json:"updateTime" bson:"updateTime"` //更新时间
+	ID           primitive.ObjectID `bson:"_id,omitempty"`
+	Name         string             `json:"name" bson:"name"`
+	Enable       int                `json:"enable" bson:"enable"`
+	StartMealDay string             `json:"startMealDay" bson:"startMealDay"`
+	EndMealDay   string             `json:"endMealDay" bson:"endMealDay"`
+	CreateTime   time.Time          `json:"createTime" bson:"createTime"` //创建时间
+	UpdateTime   time.Time          `json:"updateTime" bson:"updateTime"` //更新时间
 }
 
 func (d Switches) CreateRow() interface{} {

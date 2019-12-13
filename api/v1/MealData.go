@@ -6,6 +6,7 @@ import (
 	"github.com/xd-meal-back-end/middleware"
 	"github.com/xd-meal-back-end/middleware/mongo"
 	"github.com/xd-meal-back-end/pkg/e"
+	"github.com/xd-meal-back-end/pkg/logging"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
@@ -46,7 +47,15 @@ func GetDishes(c *gin.Context) {
 		})
 		return
 	}
-	filter := bson.M{"status": 0}
+	//选饭启动区间区间
+	filterSwitch := bson.M{"name": "order", "enable": 1}
+	switches := mongo.Switches{}.FindOne(filterSwitch)
+	if switches == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"code": 401, "msg": "还未开启选餐"})
+		return
+	}
+	filter := bson.M{"mealDay": bson.M{"$gte": switches["startMealDay"], "$lte": switches["endMealDay"]}}
+	logging.Info(filter)
 	res := mongo.FindAllSelected(filter, "meal", "dishes")
 	c.JSON(http.StatusOK, gin.H{
 		"code": 200,

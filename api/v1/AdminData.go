@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/wxnacy/wgo/arrays"
+	"github.com/xd-meal-back-end/Function"
 	"github.com/xd-meal-back-end/middleware"
 	"github.com/xd-meal-back-end/middleware/mongo"
 	"github.com/xd-meal-back-end/pkg/e"
@@ -41,6 +42,13 @@ func ReadMenu(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"msg": err})
 		return
 	}
+	//选饭启动区间区间
+	filter := bson.M{"name": "order", "enable": 0}
+	switches := mongo.Switches{}.FindOne(filter)
+	if switches == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"code": 401, "msg": "关闭选餐后才能导入菜单"})
+		return
+	}
 	data, err := middleware.ReadMenuExcel(file)
 	c.JSON(http.StatusOK, gin.H{"msg": err, "data": data})
 }
@@ -54,22 +62,37 @@ func ImportMenu(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"code": 417,
-			"msg":  e.GetMsg(400),
-			"data": "参数错误",
+			"msg":  "参数错误",
+			"data": "",
 		})
 		return
 	}
 	if param["data"] == nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"code": 417,
-			"msg":  e.GetMsg(400),
-			"data": "空数据",
+			"msg":  "空数据",
+			"data": "",
 		})
 		return
 	}
+	//选饭启动区间区间
+	filter := bson.M{"name": "order", "enable": 0}
+	switches := mongo.Switches{}.FindOne(filter)
+	if switches == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"code": 401, "msg": "关闭选餐后才能导入菜单"})
+		return
+	}
+	var timeInterval []string
 	for _, v := range param["data"] {
+		timeInterval = append(timeInterval, v.MealDay)
 		v.CreateRow()
 	}
+	maxTime := Function.MaxString(timeInterval)
+	minTime := Function.MinString(timeInterval)
+
+	update := bson.M{"$set": bson.M{"startMealDay": minTime, "endMealDay": maxTime}}
+	mongo.Switches{}.UpdateAll(filter, update)
+
 	c.JSON(http.StatusOK, gin.H{
 		"code": 200,
 		"msg":  e.GetMsg(200),

@@ -57,7 +57,7 @@ func (o *MongoUtils) UpdateAll(col string, filter bson.M, update bson.M) (interf
 	table := o.Db.Collection(col)
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 	result, err := table.UpdateMany(ctx, filter, update)
-	fmt.Println(result)
+	//fmt.Println(result)
 	if err != nil {
 		return nil, err
 	}

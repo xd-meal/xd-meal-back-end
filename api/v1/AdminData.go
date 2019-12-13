@@ -134,5 +134,11 @@ func EnableOrderSwitch(c *gin.Context) {
 func GetOrderSwitch(c *gin.Context) {
 	filter := bson.M{"name": "order"}
 	res := mongo.Switches{}.FindOne(filter)
-	c.JSON(http.StatusOK, gin.H{"code": 200, "msg": "success", "data": res["enable"]})
+	var data bool
+	if res["enable"] == int32(1) {
+		data = true
+	} else {
+		data = false
+	}
+	c.JSON(http.StatusOK, gin.H{"code": 200, "msg": "success", "data": data})
 }

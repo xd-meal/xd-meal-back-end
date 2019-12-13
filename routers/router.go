@@ -31,6 +31,7 @@ func InitRouter() *gin.Engine {
 		apiv1.POST("/UpdateUserOrder", v1.UpdateUserOrder)
 		apiv1.GET("/GetOrderSwitch", v1.GetOrderSwitch)
 		apiv1.POST("/EnableOrderSwitch", v1.EnableOrderSwitch)
+		apiv1.GET("/GetUserOrderSwitch", v1.GetUserOrderSwitch)
 	}
 	return r
 }

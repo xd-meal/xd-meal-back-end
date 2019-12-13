@@ -24,3 +24,7 @@ func (d UserDishes) CreateRow() interface{} {
 func (d UserDishes) UpdateAll(filter, update bson.M) interface{} {
 	return UpdateAll(filter, update, "meal", "userDishes")
 }
+
+func (d UserDishes) FindOne(filter bson.M) bson.M {
+	return FindOneSelected(filter, "meal", "userDishes")
+}

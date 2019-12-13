@@ -6,7 +6,6 @@ import (
 	"github.com/xd-meal-back-end/middleware"
 	"github.com/xd-meal-back-end/middleware/mongo"
 	"github.com/xd-meal-back-end/pkg/e"
-	"github.com/xd-meal-back-end/pkg/logging"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
@@ -55,7 +54,7 @@ func GetDishes(c *gin.Context) {
 		return
 	}
 	filter := bson.M{"mealDay": bson.M{"$gte": switches["startMealDay"], "$lte": switches["endMealDay"]}}
-	logging.Info(filter)
+	//logging.Info(filter)
 	res := mongo.FindAllSelected(filter, "meal", "dishes")
 	c.JSON(http.StatusOK, gin.H{
 		"code": 200,
@@ -162,4 +161,33 @@ func UpdateUserOrder(c *gin.Context) {
 		"msg":  e.GetMsg(200),
 		"data": success,
 	})
+}
+
+func GetUserOrderSwitch(c *gin.Context) {
+	logier := UserData{}.isLogin(c)
+	if logier == nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 0,
+			"msg":  "请先登录",
+			"data": "",
+		})
+		return
+	}
+
+	filter := bson.M{"name": "order"}
+	switches := mongo.Switches{}.FindOne(filter)
+	//开关控制
+	var data = false
+	if switches == nil || switches["enable"] == 0 {
+		c.JSON(http.StatusOK, gin.H{"code": 200, "msg": "success", "data": false})
+		return
+	}
+	//点餐后订餐按钮消失
+	filter2 := bson.M{"mealDay": bson.M{"$gte": switches["startMealDay"], "$lte": switches["endMealDay"]}}
+	userDishes := mongo.UserDishes{}.FindOne(filter2)
+	if userDishes == nil {
+		data = true
+	}
+
+	c.JSON(http.StatusOK, gin.H{"code": 200, "msg": "success", "data": data})
 }

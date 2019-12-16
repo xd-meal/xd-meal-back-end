@@ -9,6 +9,7 @@ import (
 	"github.com/xd-meal-back-end/middleware/mongo"
 	"github.com/xd-meal-back-end/pkg/e"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 	"strconv"
 )
@@ -69,6 +70,37 @@ func (ud UserData) isLogin(c *gin.Context) interface{} {
 	} else {
 		return nil
 	}
+}
+
+func ResetPasswordByUser(c *gin.Context) {
+	logier := UserData{}.isLogin(c)
+	if logier == nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 0,
+			"msg":  "请先登录",
+			"data": "",
+		})
+		return
+	}
+	var param map[string]string
+	err := c.BindJSON(&param)
+	if err != nil || param["password"] == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code": 417,
+			"msg":  e.GetMsg(400),
+			"data": "参数不能为空",
+		})
+		return
+	}
+	id, _ := primitive.ObjectIDFromHex(logier.(string))
+	filter := bson.M{"_id": id}
+	update := bson.M{"$set": bson.M{"password": fmt.Sprintf("%x", md5.Sum([]byte(param["password"])))}}
+	mongo.UserMongo{}.UpdateAll(filter, update)
+	session := sessions.Default(c)
+	session.Delete("logier")
+	session.Delete("email")
+	_ = session.Save()
+	c.JSON(http.StatusOK, gin.H{"code": 200, "msg": "密码修改成功，请重新登录"})
 }
 
 func EvalDish(c *gin.Context) {

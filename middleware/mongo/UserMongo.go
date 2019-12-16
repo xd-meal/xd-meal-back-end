@@ -1,6 +1,7 @@
 package mongo
 
 import (
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
 )
@@ -17,4 +18,8 @@ type UserMongo struct {
 
 func (d UserMongo) CreateRow() interface{} {
 	return createRow(d, "meal", "user")
+}
+
+func (d UserMongo) UpdateAll(filter, update bson.M) interface{} {
+	return UpdateAll(filter, update, "meal", "user")
 }

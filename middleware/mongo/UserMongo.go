@@ -23,3 +23,7 @@ func (d UserMongo) CreateRow() interface{} {
 func (d UserMongo) UpdateAll(filter, update bson.M) interface{} {
 	return UpdateAll(filter, update, "meal", "user")
 }
+
+func (d UserMongo) FindOne(filter bson.M) bson.M {
+	return FindOneSelected(filter, "meal", "user")
+}

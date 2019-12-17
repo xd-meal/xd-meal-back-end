@@ -36,6 +36,7 @@ func Login(c *gin.Context) {
 		logier, _ := strconv.Unquote(string(id))
 		session.Set("logier", logier)
 		session.Set("email", param["email"])
+		session.Set("roleType", info["type"])
 		_ = session.Save()
 		fmt.Println("logier:", session.Get("logier"))
 		fmt.Println("email:", session.Get("email"))
@@ -76,15 +77,13 @@ func ResetPasswordByUser(c *gin.Context) {
 	logier := UserData{}.isLogin(c)
 	if logier == nil {
 		c.JSON(http.StatusOK, gin.H{
-			"code": 0,
-			"msg":  "请先登录",
-			"data": "",
+			"code": 0, "msg": "请先登录", "data": "",
 		})
 		return
 	}
 	var param map[string]string
 	err := c.BindJSON(&param)
-	if err != nil || param["password"] == "" {
+	if err != nil || param["password"] == "" || param["oldPassword"] == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"code": 417,
 			"msg":  e.GetMsg(400),
@@ -93,6 +92,16 @@ func ResetPasswordByUser(c *gin.Context) {
 		return
 	}
 	id, _ := primitive.ObjectIDFromHex(logier.(string))
+	checkUser := mongo.UserMongo{}.FindOne(bson.M{"_id": id, "password": fmt.Sprintf("%x", md5.Sum([]byte(param["oldPassword"])))})
+	if checkUser == nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code": 417,
+			"msg":  e.GetMsg(400),
+			"data": "原密码错误",
+		})
+		return
+	}
+
 	filter := bson.M{"_id": id}
 	update := bson.M{"$set": bson.M{"password": fmt.Sprintf("%x", md5.Sum([]byte(param["password"])))}}
 	mongo.UserMongo{}.UpdateAll(filter, update)
@@ -107,9 +116,7 @@ func EvalDish(c *gin.Context) {
 	logier := UserData{}.isLogin(c)
 	if logier == nil {
 		c.JSON(http.StatusOK, gin.H{
-			"code": 0,
-			"msg":  "请先登录",
-			"data": "",
+			"code": 0, "msg": "请先登录", "data": "",
 		})
 		return
 	}

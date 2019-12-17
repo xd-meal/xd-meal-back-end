@@ -261,55 +261,6 @@ GET
 ```
 
 #后台接口
-## 后台登录
-> 请求方式
-```
-POST-application/json
-```
-> 路由
-```
-/api/v1/AdminLogin
-```
-> 入参
-
-|参数|类型|含义|是否必须 
-|:----- |:----- |:----- |:----- | 
-|email|string|邮箱|Y
-|password|string|密码|Y
-```
-{
-	"email":"937728009@qq.com",
-	"password":"xd123456"
-}
-```
-> 出参
-```
-{
-    "code": 200,
-    "msg": "登录成功"
-}
-```
-
-## 后台退出
-> 请求方式
-```
-POST-application/json
-```
-> 路由
-```
-/api/v1/AdminLoginOut
-```
-> 入参
-
-无
-
-> 出参
-```
-{
-    "code": 200,
-    "msg": "退出"
-}
-```
 
 ## 导入外部用户
 > 请求方式

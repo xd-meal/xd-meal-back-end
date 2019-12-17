@@ -2,7 +2,6 @@ package v1
 
 import (
 	"crypto/md5"
-	"encoding/json"
 	"fmt"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -14,7 +13,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
-	"strconv"
 	"time"
 )
 
@@ -23,10 +21,10 @@ import (
 */
 func ImportUser(c *gin.Context) {
 	//登录验证
-	logier := UserData{}.isAdminLogin(c)
-	if logier == nil {
+	logier, roleType := UserData{}.isAdminLogin(c)
+	if logier == nil || roleType != 1 {
 		c.JSON(http.StatusOK, gin.H{
-			"code": 0, "msg": "请先登录", "data": "",
+			"code": 0, "msg": "没有权限", "data": "",
 		})
 		return
 	}
@@ -49,10 +47,10 @@ func ImportUser(c *gin.Context) {
 */
 func ReadMenu(c *gin.Context) {
 	//登录验证
-	logier := UserData{}.isAdminLogin(c)
-	if logier == nil {
+	logier, roleType := UserData{}.isAdminLogin(c)
+	if logier == nil || roleType != 1 {
 		c.JSON(http.StatusOK, gin.H{
-			"code": 0, "msg": "请先登录", "data": "",
+			"code": 0, "msg": "没有权限", "data": "",
 		})
 		return
 	}
@@ -77,10 +75,10 @@ func ReadMenu(c *gin.Context) {
 */
 func ImportMenu(c *gin.Context) {
 	//登录验证
-	logier := UserData{}.isAdminLogin(c)
-	if logier == nil {
+	logier, roleType := UserData{}.isAdminLogin(c)
+	if logier == nil || roleType != 1 {
 		c.JSON(http.StatusOK, gin.H{
-			"code": 0, "msg": "请先登录", "data": "",
+			"code": 0, "msg": "没有权限", "data": "",
 		})
 		return
 	}
@@ -113,6 +111,12 @@ func ImportMenu(c *gin.Context) {
 	for _, v := range param["data"] {
 		timeInterval = append(timeInterval, v.MealDay)
 		v.CreateRow()
+		//合并菜品库
+		filterDishLib := bson.M{"name": v.Name}
+		exist := mongo.DishLib{}.FindOne(filterDishLib)
+		if exist == nil {
+			mongo.DishLib{ID: primitive.NewObjectID(), Name: v.Name, Supplier: v.Supplier, CreateTime: time.Now()}.CreateRow()
+		}
 	}
 	maxTime := Function.MaxString(timeInterval)
 	minTime := Function.MinString(timeInterval)
@@ -129,10 +133,10 @@ func ImportMenu(c *gin.Context) {
 
 func EnableOrderSwitch(c *gin.Context) {
 	//登录验证
-	logier := UserData{}.isAdminLogin(c)
-	if logier == nil {
+	logier, roleType := UserData{}.isAdminLogin(c)
+	if logier == nil || roleType != 1 {
 		c.JSON(http.StatusOK, gin.H{
-			"code": 0, "msg": "请先登录", "data": "",
+			"code": 0, "msg": "没有权限", "data": "",
 		})
 		return
 	}
@@ -168,10 +172,10 @@ func EnableOrderSwitch(c *gin.Context) {
 
 func GetOrderSwitch(c *gin.Context) {
 	//登录验证
-	logier := UserData{}.isAdminLogin(c)
-	if logier == nil {
+	logier, roleType := UserData{}.isAdminLogin(c)
+	if logier == nil || roleType != 1 {
 		c.JSON(http.StatusOK, gin.H{
-			"code": 0, "msg": "请先登录", "data": "",
+			"code": 0, "msg": "没有权限", "data": "",
 		})
 		return
 	}
@@ -186,46 +190,13 @@ func GetOrderSwitch(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"code": 200, "msg": "success", "data": data})
 }
 
-func AdminLogin(c *gin.Context) {
-	var param map[string]string
-	err := c.BindJSON(&param)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"code": 417,
-			"msg":  e.GetMsg(400),
-			"data": err,
-		})
-		return
-	}
-	filter := bson.M{"email": param["email"], "type": 1, "password": fmt.Sprintf("%x", md5.Sum([]byte(param["password"])))}
-	info := mongo.FindOneSelected(filter, "meal", "user")
-	if info != nil {
-		session := sessions.Default(c)
-		id, _ := json.Marshal(info["_id"])
-		logier, _ := strconv.Unquote(string(id))
-		session.Set("admin_logier", logier)
-		session.Set("admin_email", param["email"])
-		_ = session.Save()
-		c.JSON(http.StatusOK, gin.H{"code": 200, "msg": "登录成功"})
-	} else {
-		c.JSON(http.StatusOK, gin.H{"code": 0, "msg": "登录失败"})
-	}
-}
-
-func AdminLoginOut(c *gin.Context) {
+func (ud UserData) isAdminLogin(c *gin.Context) (interface{}, int32) {
 	session := sessions.Default(c)
-	session.Delete("admin_logier")
-	session.Delete("admin_email")
-	_ = session.Save()
-	c.JSON(http.StatusOK, gin.H{"code": 200, "msg": "退出成功", "data": ""})
-}
-
-func (ud UserData) isAdminLogin(c *gin.Context) interface{} {
-	session := sessions.Default(c)
-	logier := session.Get("admin_logier")
-	if logier != nil {
-		return logier
+	logier := session.Get("logier")
+	roleType := session.Get("roleType").(int32)
+	if logier != "" {
+		return logier, roleType
 	} else {
-		return nil
+		return "", 0
 	}
 }

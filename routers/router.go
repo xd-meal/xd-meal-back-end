@@ -33,8 +33,6 @@ func InitRouter() *gin.Engine {
 		apiv1.POST("/EnableOrderSwitch", v1.EnableOrderSwitch)
 		apiv1.GET("/GetUserOrderSwitch", v1.GetUserOrderSwitch)
 		apiv1.POST("/ResetPasswordByUser", v1.ResetPasswordByUser)
-		apiv1.POST("/AdminLogin", v1.AdminLogin)
-		apiv1.POST("/AdminLoginOut", v1.AdminLoginOut)
 	}
 	return r
 }

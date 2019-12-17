@@ -3,12 +3,12 @@ GOCMD=go
 GOBUILD=$(GOCMD) build
 GOCLEAN=$(GOCMD) clean
 GOTEST=$(GOCMD) test
-# GOGET=$(GOCMD) get
+GOGET=$(GOCMD) get
 GORUN=$(GOCMD) run
 BINARY_NAME=build
 BINARY_UNIX=$(BINARY_NAME)_unix
 
-all: build
+all: build build-linux
 
 build:
 	$(GOBUILD) -o $(BINARY_NAME) -v
@@ -18,12 +18,15 @@ clean:
 	rm -f $(BINARY_NAME)
 	rm -f $(BINARY_UNIX)
 
-# TODO: need to config
-test:
-	$(GOTEST) -v ./...
+# no test
+# test:
+# 	$(GOTEST) -v ./...
 
 run:
-	$(GORUN) *.go
+	$(GORUN) main.go
+
+# get:
+#     $(GOGET)
 
 # Cross compile build
 build-linux:

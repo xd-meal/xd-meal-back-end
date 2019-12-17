@@ -247,6 +247,7 @@ GET
 > 入参
 ```
 {
+    "oldPassword":"shenzhuo1234"
 	"password":"shenzhuo123"
 }
 

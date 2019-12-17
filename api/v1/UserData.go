@@ -86,8 +86,8 @@ func ResetPasswordByUser(c *gin.Context) {
 	if err != nil || param["password"] == "" || param["oldPassword"] == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"code": 417,
-			"msg":  e.GetMsg(400),
-			"data": "参数不能为空",
+			"msg":  "参数不能为空",
+			"data": "",
 		})
 		return
 	}
@@ -96,8 +96,8 @@ func ResetPasswordByUser(c *gin.Context) {
 	if checkUser == nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"code": 417,
-			"msg":  e.GetMsg(400),
-			"data": "原密码错误",
+			"msg":  "原密码错误",
+			"data": "",
 		})
 		return
 	}

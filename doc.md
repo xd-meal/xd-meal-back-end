@@ -78,105 +78,9 @@ GET
             "updateTime": "2019-12-06T15:20:32.751+08:00"
         },
         {
-            "_id": "5dea015e26a606122cf74d4d",
-            "createTime": "2019-12-06T15:20:32.751+08:00",
-            "mealDay": "2019-12-06",
-            "mealNum": 1,
-            "name": "健康水果轻食",
-            "status": 0,
-            "supplier": "多点沙拉",
-            "typeA": 1,
-            "typeB": 2,
-            "updateTime": "2019-12-06T15:20:32.751+08:00"
-        },
-        {
-            "_id": "5dea015e26a606122cf74d5e",
-            "createTime": "2019-12-06T15:20:32.751+08:00",
-            "mealDay": "2019-12-08",
-            "mealNum": 0,
-            "name": "自助餐",
-            "status": 0,
-            "supplier": "园沁餐厅",
-            "typeA": 1,
-            "typeB": 1,
-            "updateTime": "2019-12-06T15:20:32.751+08:00"
-        },
-        {
             "_id": "5dea015e26a606122cf74d5f",
             "createTime": "2019-12-06T15:20:32.751+08:00",
             "mealDay": "2019-12-08",
-            "mealNum": 1,
-            "name": "健康水果轻食",
-            "status": 0,
-            "supplier": "多点沙拉",
-            "typeA": 1,
-            "typeB": 2,
-            "updateTime": "2019-12-06T15:20:32.751+08:00"
-        },
-        {
-            "_id": "5dea015e26a606122cf74d60",
-            "createTime": "2019-12-06T15:20:32.751+08:00",
-            "mealDay": "2019-12-08",
-            "mealNum": 2,
-            "name": "爆炒子姜鸭",
-            "status": 0,
-            "supplier": "红采餐饮",
-            "typeA": 1,
-            "typeB": 2,
-            "updateTime": "2019-12-06T15:20:32.751+08:00"
-        },
-        {
-            "_id": "5dea015e26a606122cf74d61",
-            "createTime": "2019-12-06T15:20:32.751+08:00",
-            "mealDay": "2019-12-08",
-            "mealNum": 3,
-            "name": "水煮肉片",
-            "status": 0,
-            "supplier": "颂饭",
-            "typeA": 1,
-            "typeB": 2,
-            "updateTime": "2019-12-06T15:20:32.751+08:00"
-        },
-        {
-            "_id": "5dea015e26a606122cf74d62",
-            "createTime": "2019-12-06T15:20:32.751+08:00",
-            "mealDay": "2019-12-08",
-            "mealNum": 4,
-            "name": "特色干拌套餐",
-            "status": 0,
-            "supplier": "觅哥麻辣烫",
-            "typeA": 1,
-            "typeB": 2,
-            "updateTime": "2019-12-06T15:20:32.751+08:00"
-        },
-        {
-            "_id": "5dea015e26a606122cf74d63",
-            "createTime": "2019-12-06T15:20:32.751+08:00",
-            "mealDay": "2019-12-08",
-            "mealNum": 0,
-            "name": "自助餐",
-            "status": 0,
-            "supplier": "园沁餐厅",
-            "typeA": 2,
-            "typeB": 1,
-            "updateTime": "2019-12-06T15:20:32.751+08:00"
-        },
-        {
-            "_id": "5dea015e26a606122cf74d64",
-            "createTime": "2019-12-06T15:20:32.751+08:00",
-            "mealDay": "2019-12-08",
-            "mealNum": 1,
-            "name": "牛肉串串",
-            "status": 0,
-            "supplier": "卤人甲",
-            "typeA": 2,
-            "typeB": 2,
-            "updateTime": "2019-12-06T15:20:32.751+08:00"
-        },
-        {
-            "_id": "5dea015f26a606122cf74d7a",
-            "createTime": "2019-12-06T15:20:32.751+08:00",
-            "mealDay": "2019-12-11",
             "mealNum": 1,
             "name": "健康水果轻食",
             "status": 0,
@@ -193,30 +97,6 @@ GET
             "name": "爆炒子姜鸭",
             "status": 0,
             "supplier": "红采餐饮",
-            "typeA": 1,
-            "typeB": 2,
-            "updateTime": "2019-12-06T15:20:32.751+08:00"
-        },
-        {
-            "_id": "5dea015f26a606122cf74d7c",
-            "createTime": "2019-12-06T15:20:32.751+08:00",
-            "mealDay": "2019-12-11",
-            "mealNum": 3,
-            "name": "水煮肉片",
-            "status": 0,
-            "supplier": "颂饭",
-            "typeA": 1,
-            "typeB": 2,
-            "updateTime": "2019-12-06T15:20:32.751+08:00"
-        },
-        {
-            "_id": "5dea015f26a606122cf74d7d",
-            "createTime": "2019-12-06T15:20:32.751+08:00",
-            "mealDay": "2019-12-11",
-            "mealNum": 4,
-            "name": "特色干拌套餐",
-            "status": 0,
-            "supplier": "觅哥麻辣烫",
             "typeA": 1,
             "typeB": 2,
             "updateTime": "2019-12-06T15:20:32.751+08:00"
@@ -381,6 +261,55 @@ GET
 ```
 
 #后台接口
+## 后台登录
+> 请求方式
+```
+POST-application/json
+```
+> 路由
+```
+/api/v1/AdminLogin
+```
+> 入参
+
+|参数|类型|含义|是否必须 
+|:----- |:----- |:----- |:----- | 
+|email|string|邮箱|Y
+|password|string|密码|Y
+```
+{
+	"email":"937728009@qq.com",
+	"password":"xd123456"
+}
+```
+> 出参
+```
+{
+    "code": 200,
+    "msg": "登录成功"
+}
+```
+
+## 后台退出
+> 请求方式
+```
+POST-application/json
+```
+> 路由
+```
+/api/v1/AdminLoginOut
+```
+> 入参
+
+无
+
+> 出参
+```
+{
+    "code": 200,
+    "msg": "退出"
+}
+```
 
 ## 导入外部用户
 > 请求方式

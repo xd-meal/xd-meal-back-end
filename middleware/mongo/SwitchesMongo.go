@@ -20,7 +20,7 @@ func (d Switches) CreateRow() interface{} {
 	return createRow(d, "meal", "switches")
 }
 
-func (d Switches) UpdateAll(filter, update bson.M) interface{} {
+func (d Switches) UpdateAll(filter, update bson.M) int64 {
 	return UpdateAll(filter, update, "meal", "switches")
 }
 

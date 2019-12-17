@@ -50,16 +50,16 @@ func (o *MongoUtils) SetDb(db string) {
 	o.Db = o.Con.Database(db)
 }
 
-func (o *MongoUtils) UpdateAll(col string, filter bson.M, update bson.M) (interface{}, error) {
+func (o *MongoUtils) UpdateAll(col string, filter bson.M, update bson.M) (int64, error) {
 	if o.Db == nil || o.Con == nil {
-		return nil, fmt.Errorf("没有初始化连接和数据库信息！")
+		return 0, fmt.Errorf("没有初始化连接和数据库信息！")
 	}
 	table := o.Db.Collection(col)
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 	result, err := table.UpdateMany(ctx, filter, update)
 	//fmt.Println(result)
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
 	return result.ModifiedCount, nil
 }
@@ -153,7 +153,7 @@ func FindOneSelected(filter bson.M, dbName string, tableName string) bson.M {
 	return result
 }
 
-func UpdateAll(filter bson.M, update bson.M, dbName string, tableName string) interface{} {
+func UpdateAll(filter bson.M, update bson.M, dbName string, tableName string) int64 {
 	utils := MongoUtils{}
 	utils.OpenConn()
 	utils.SetDb(dbName)

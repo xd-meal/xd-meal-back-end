@@ -21,7 +21,7 @@ func (d UserDishes) CreateRow() interface{} {
 	return createRow(d, "meal", "userDishes")
 }
 
-func (d UserDishes) UpdateAll(filter, update bson.M) interface{} {
+func (d UserDishes) UpdateAll(filter, update bson.M) int64 {
 	return UpdateAll(filter, update, "meal", "userDishes")
 }
 

@@ -7,7 +7,6 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/xd-meal-back-end/middleware/mongo"
-	"github.com/xd-meal-back-end/pkg/e"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
@@ -23,8 +22,8 @@ func Login(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"code": 417,
-			"msg":  e.GetMsg(400),
-			"data": err,
+			"msg":  err,
+			"data": "",
 		})
 		return
 	}
@@ -119,6 +118,25 @@ func EvalDish(c *gin.Context) {
 			"code": 0, "msg": "请先登录", "data": "",
 		})
 		return
+	}
+	var param map[string]string
+	err := c.BindJSON(&param)
+	if err != nil || param["id"] == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code": 417, "msg": err, "data": "",
+		})
+		return
+	}
+	id, _ := primitive.ObjectIDFromHex(param["id"])
+	uid := logier
+	filter := bson.M{"_id": id, "uid": uid}
+	fmt.Println(filter)
+	update := bson.M{"$set": bson.M{"BadEval": 1}}
+	res := mongo.UserDishes{}.UpdateAll(filter, update)
+	if res == int64(0) {
+		c.JSON(http.StatusOK, gin.H{"code": 400, "msg": "菜品不存在或已提交评价"})
+	} else {
+		c.JSON(http.StatusOK, gin.H{"code": 200, "msg": "评价成功"})
 	}
 
 }

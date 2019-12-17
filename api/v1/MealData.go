@@ -80,11 +80,11 @@ func OrderDishes(c *gin.Context) {
 
 	var param map[string][]string
 	err := c.BindJSON(&param)
-	if err != nil {
+	if err != nil || param["dishIds"] == nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"code": 417,
-			"msg":  e.GetMsg(400),
-			"data": err,
+			"msg":  err,
+			"data": "",
 		})
 		return
 	}
@@ -121,7 +121,9 @@ func GetOrderDishes(c *gin.Context) {
 		})
 		return
 	}
-	userDishes := mongo.FindAllSelected(bson.M{"uid": logier.(string), "status": 0}, "meal", "userDishes")
+	filterSwitch := bson.M{"name": "order"}
+	switches := mongo.Switches{}.FindOne(filterSwitch)
+	userDishes := mongo.FindAllSelected(bson.M{"uid": logier.(string), "mealDay": bson.M{"$gte": switches["startMealDay"], "$lte": switches["endMealDay"]}}, "meal", "userDishes")
 	//ArrayColumn
 	columns := make([]interface{}, 0, len(userDishes))
 	for _, val := range userDishes {

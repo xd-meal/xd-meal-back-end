@@ -20,7 +20,7 @@ func (d UserMongo) CreateRow() interface{} {
 	return createRow(d, "meal", "user")
 }
 
-func (d UserMongo) UpdateAll(filter, update bson.M) interface{} {
+func (d UserMongo) UpdateAll(filter, update bson.M) int64 {
 	return UpdateAll(filter, update, "meal", "user")
 }
 

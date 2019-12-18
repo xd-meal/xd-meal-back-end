@@ -88,17 +88,15 @@ func OrderDishes(c *gin.Context) {
 		})
 		return
 	}
-	//是否点过餐
-	filter := bson.M{"name": "order"}
-	switches := mongo.Switches{}.FindOne(filter)
-	filter2 := bson.M{"uid": logier.(string), "mealDay": bson.M{"$gte": switches["startMealDay"], "$lte": switches["endMealDay"]}}
-	isOrdered := mongo.UserDishesMongo{}.FindOne(filter2)
-	if isOrdered != nil {
+	//不能重复点餐
+	userDishes := mongo.UserDishesMongo{}.GetUserDishesByOrdered(logier.(string))
+	if userDishes != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"code": 417, "msg": "不能重复点餐",
 		})
 		return
 	}
+	//订餐
 	dishIds := param["dishIds"]
 	idList := make([]primitive.ObjectID, len(dishIds))
 	for i, id := range dishIds {
@@ -111,9 +109,10 @@ func OrderDishes(c *gin.Context) {
 		id, _ := json.Marshal(v["_id"])
 		dishId, _ := strconv.Unquote(string(id))
 		insert := mongo.UserDishesMongo{ID: primitive.NewObjectID(), Uid: logier.(string), DishId: dishId, Name: v["name"].(string), Supplier: v["supplier"].(string),
-			MealDay: v["mealDay"].(string), OrderTime: currentTime, BadEval: false}
+			TypeA: v["typeA"].(int32), MealDay: v["mealDay"].(string), OrderTime: currentTime, BadEval: false}
 		insert.CreateRow()
 	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"code": 200,
 		"msg":  e.GetMsg(200),
@@ -132,9 +131,8 @@ func GetOrderDishes(c *gin.Context) {
 		})
 		return
 	}
-	filterSwitch := bson.M{"name": "order"}
-	switches := mongo.Switches{}.FindOne(filterSwitch)
-	userDishes := mongo.UserDishesMongo{}.FindAll(bson.M{"uid": logier.(string), "mealDay": bson.M{"$gte": switches["startMealDay"], "$lte": switches["endMealDay"]}})
+	userDishes := mongo.UserDishesMongo{}.GetUserDishesByOrdered(logier.(string))
+
 	//ArrayColumn
 	//columns := make([]interface{}, 0, len(userDishes))
 	//for _, val := range userDishes {
@@ -194,9 +192,9 @@ func GetUserOrderSwitch(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"code": 200, "msg": "success", "data": false})
 		return
 	}
-	//点餐后订餐按钮消失
-	filter2 := bson.M{"uid": logier.(string), "mealDay": bson.M{"$gte": switches["startMealDay"], "$lte": switches["endMealDay"]}}
-	userDishes := mongo.UserDishesMongo{}.FindOne(filter2)
+	//用户可选的午、晚餐条件
+	//filter2 := bson.M{"uid": logier.(string), "mealDay": bson.M{"$gte": switches["startMealDay"], "$lte": switches["endMealDay"]}}
+	userDishes := mongo.UserDishesMongo{}.GetUserDishesByOrdered(logier.(string))
 	if userDishes == nil {
 		data = true
 	}

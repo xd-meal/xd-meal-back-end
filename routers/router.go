@@ -34,6 +34,8 @@ func InitRouter() *gin.Engine {
 		apiv1.GET("/GetUserOrderSwitch", v1.GetUserOrderSwitch)
 		apiv1.POST("/ResetPasswordByUser", v1.ResetPasswordByUser)
 		apiv1.POST("/EvalDish", v1.EvalDish)
+		apiv1.GET("/GetDishCode", v1.GetDishCode)
+		apiv1.POST("/ScanDishCode", v1.ScanDishCode)
 	}
 	return r
 }

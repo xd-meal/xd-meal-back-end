@@ -76,7 +76,7 @@ func ReadMenuExcel(r io.Reader) ([]mongo.DishesMongo, error) {
 
 	res := make([]mongo.DishesMongo, len(sheetMap)*12)
 	key := 0
-	var TypeA, typeB int
+	var TypeA, typeB int32
 	currentTime := time.Now()
 	for _, date := range sheetArr {
 		for i, v := range data[date] {

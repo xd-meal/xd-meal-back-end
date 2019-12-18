@@ -513,3 +513,81 @@ POST-application/json
     "msg": "菜品不存在或已提交评价"
 }
 ```
+
+## 生成取餐二维码
+> 请求方式
+```
+GET
+```
+> 路由
+```
+/api/v1/GetDishCode
+```
+> 入参
+
+无
+```
+{
+	"token":"C5df9eddf11d06036fb5a76a9"
+}
+```
+> 出参
+```
+{
+    "code": 200,
+    "data": {
+        "_id": "5df9eddf11d06036fb5a76a9",
+        "badEval": false,
+        "dishId": "5df88cb0717a45dd5764d7c1",
+        "mealDay": "2019-12-18",
+        "mealNum": 0,
+        "name": "东北手卷春饼",
+        "status": 1,
+        "supplier": "大宁东北水饺",
+        "typeA": 2,
+        "uid": "5df75734dcd9fa4184580f55",
+        "updateTime": "2019-12-18T17:14:07.433+08:00"
+    },
+    "msg": "不能重复取餐"
+}
+```
+
+## 二维码取餐
+> 请求方式
+```
+POST-application/json
+```
+> 路由
+```
+/api/v1/ScanDishCode
+```
+> 入参
+
+|参数|类型|含义|是否必须 
+|:----- |:----- |:----- |:----- | 
+|token|string|二维码|Y
+```
+{
+	"token":"C5df9eddf11d06036fb5a76a9"
+}
+```
+> 出参
+```
+{
+    "code": 200,
+    "data": {
+        "_id": "5df9eddf11d06036fb5a76a9",
+        "badEval": false,
+        "dishId": "5df88cb0717a45dd5764d7c1",
+        "mealDay": "2019-12-18",
+        "mealNum": 0,
+        "name": "东北手卷春饼",
+        "status": 1,
+        "supplier": "大宁东北水饺",
+        "typeA": 2,
+        "uid": "5df75734dcd9fa4184580f55",
+        "updateTime": "2019-12-18T17:14:07.433+08:00"
+    },
+    "msg": "不能重复取餐"
+}
+```

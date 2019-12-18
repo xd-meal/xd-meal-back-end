@@ -16,6 +16,11 @@ import (
 type UserData struct {
 }
 
+type RequestEvalDish struct {
+	ID   string `json:"id" form:"name"`
+	Eval bool   `json:"eval" form:"eval"`
+}
+
 func Login(c *gin.Context) {
 	var param map[string]string
 	err := c.BindJSON(&param)
@@ -119,24 +124,22 @@ func EvalDish(c *gin.Context) {
 		})
 		return
 	}
-	var param map[string]string
-	err := c.BindJSON(&param)
-	if err != nil || param["id"] == "" {
+	param := RequestEvalDish{}
+	if c.ShouldBind(&param) != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"code": 417, "msg": err, "data": "",
+			"code": 417, "msg": "参数错误", "data": "",
 		})
 		return
 	}
-	id, _ := primitive.ObjectIDFromHex(param["id"])
+	id, _ := primitive.ObjectIDFromHex(param.ID)
 	uid := logier
 	filter := bson.M{"_id": id, "uid": uid}
-	fmt.Println(filter)
-	update := bson.M{"$set": bson.M{"BadEval": 1}}
-	res := mongo.UserDishes{}.UpdateAll(filter, update)
-	if res == int64(0) {
-		c.JSON(http.StatusOK, gin.H{"code": 400, "msg": "菜品不存在或已提交评价"})
-	} else {
-		c.JSON(http.StatusOK, gin.H{"code": 200, "msg": "评价成功"})
+	dish := mongo.UserDishesMongo{}.FindOne(filter)
+	if dish == nil {
+		c.JSON(http.StatusOK, gin.H{"code": 200, "msg": "要评价的订单不存在"})
+		return
 	}
-
+	update := bson.M{"$set": bson.M{"badEval": param.Eval}}
+	mongo.UserDishesMongo{}.UpdateAll(filter, update)
+	c.JSON(http.StatusOK, gin.H{"code": 200, "msg": "评价成功"})
 }

@@ -499,7 +499,11 @@ POST-application/json
 |enable|int|订餐开关0-关闭，1-开启|Y
 ```
 {
-	"id":"5df8ac95822b24bfb38d8c26"//用户菜品_id
+	"id":"5df8ac95822b24bfb38d8c26"
+}
+{
+	"id":"5df9af62fc8017cce5772a15",//用户菜品_id
+	"eval":false//bool类型
 }
 ```
 > 出参

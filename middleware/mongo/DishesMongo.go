@@ -1,6 +1,7 @@
 package mongo
 
 import (
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
 )
@@ -20,4 +21,8 @@ type DishesMongo struct {
 
 func (d DishesMongo) CreateRow() interface{} {
 	return createRow(d, "meal", "dishes")
+}
+
+func (d DishesMongo) FindAll(filter bson.M) []bson.M {
+	return FindAllSelected(filter, "meal", "dishes")
 }

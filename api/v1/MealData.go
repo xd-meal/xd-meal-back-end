@@ -88,19 +88,30 @@ func OrderDishes(c *gin.Context) {
 		})
 		return
 	}
+	//是否点过餐
+	filter := bson.M{"name": "order"}
+	switches := mongo.Switches{}.FindOne(filter)
+	filter2 := bson.M{"uid": logier.(string), "mealDay": bson.M{"$gte": switches["startMealDay"], "$lte": switches["endMealDay"]}}
+	isOrdered := mongo.UserDishesMongo{}.FindOne(filter2)
+	if isOrdered != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code": 417, "msg": "不能重复点餐",
+		})
+		return
+	}
 	dishIds := param["dishIds"]
 	idList := make([]primitive.ObjectID, len(dishIds))
 	for i, id := range dishIds {
 		idList[i], _ = primitive.ObjectIDFromHex(id)
 	}
 	currentTime := time.Now()
-	dishes := mongo.FindAllSelected(bson.M{"_id": bson.M{"$in": idList}}, "meal", "dishes")
+	dishes := mongo.DishesMongo{}.FindAll(bson.M{"_id": bson.M{"$in": idList}})
 
 	for _, v := range dishes {
 		id, _ := json.Marshal(v["_id"])
 		dishId, _ := strconv.Unquote(string(id))
-		insert := mongo.UserDishes{ID: primitive.NewObjectID(), Uid: logier.(string), DishId: dishId,
-			MealDay: v["mealDay"].(string), OrderTime: currentTime, BadEval: 0}
+		insert := mongo.UserDishesMongo{ID: primitive.NewObjectID(), Uid: logier.(string), DishId: dishId, Name: v["name"].(string), Supplier: v["supplier"].(string),
+			MealDay: v["mealDay"].(string), OrderTime: currentTime, BadEval: false}
 		insert.CreateRow()
 	}
 	c.JSON(http.StatusOK, gin.H{
@@ -123,21 +134,20 @@ func GetOrderDishes(c *gin.Context) {
 	}
 	filterSwitch := bson.M{"name": "order"}
 	switches := mongo.Switches{}.FindOne(filterSwitch)
-	userDishes := mongo.FindAllSelected(bson.M{"uid": logier.(string), "mealDay": bson.M{"$gte": switches["startMealDay"], "$lte": switches["endMealDay"]}}, "meal", "userDishes")
+	userDishes := mongo.UserDishesMongo{}.FindAll(bson.M{"uid": logier.(string), "mealDay": bson.M{"$gte": switches["startMealDay"], "$lte": switches["endMealDay"]}})
 	//ArrayColumn
-	columns := make([]interface{}, 0, len(userDishes))
-	for _, val := range userDishes {
-		if v, ok := val["dishId"]; ok {
-			objId, _ := primitive.ObjectIDFromHex(v.(string))
-			columns = append(columns, objId)
-		}
-	}
-	dishes := mongo.FindAllSelected(bson.M{"_id": bson.M{"$in": columns}}, "meal", "dishes")
-
+	//columns := make([]interface{}, 0, len(userDishes))
+	//for _, val := range userDishes {
+	//	if v, ok := val["dishId"]; ok {
+	//		objId, _ := primitive.ObjectIDFromHex(v.(string))
+	//		columns = append(columns, objId)
+	//	}
+	//}
+	//dishes := mongo.FindAllSelected(bson.M{"_id": bson.M{"$in": columns}}, "meal", "dishes")
 	c.JSON(http.StatusOK, gin.H{
 		"code": 200,
 		"msg":  e.GetMsg(200),
-		"data": dishes,
+		"data": userDishes,
 	})
 }
 
@@ -151,7 +161,7 @@ func UpdateUserOrder(c *gin.Context) {
 		})
 		return
 	}
-	dish := mongo.UserDishes{}
+	dish := mongo.UserDishesMongo{}
 	//objId, _ := primitive.ObjectIDFromHex("5dea01d126a606122cf74d8b")
 	filter := bson.M{"uid": "de4db7a7cfb83e4f6a61a25"}
 	update := bson.M{
@@ -185,8 +195,8 @@ func GetUserOrderSwitch(c *gin.Context) {
 		return
 	}
 	//点餐后订餐按钮消失
-	filter2 := bson.M{"mealDay": bson.M{"$gte": switches["startMealDay"], "$lte": switches["endMealDay"]}}
-	userDishes := mongo.UserDishes{}.FindOne(filter2)
+	filter2 := bson.M{"uid": logier.(string), "mealDay": bson.M{"$gte": switches["startMealDay"], "$lte": switches["endMealDay"]}}
+	userDishes := mongo.UserDishesMongo{}.FindOne(filter2)
 	if userDishes == nil {
 		data = true
 	}

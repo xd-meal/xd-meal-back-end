@@ -11,6 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
+	"net/url"
 	"strconv"
 	"time"
 )
@@ -247,7 +248,11 @@ func ScanDishCode(c *gin.Context) {
 	}
 }
 
-func WeiXinLogin(c *gin.Context) {
-	accessToken := wx.GetAccessToken()
-	fmt.Println(accessToken)
+func GetQRCode(c *gin.Context) {
+	v := url.Values{}
+	v.Add("redirect_uri", wx.RedirectUri)
+	redirectUri := v.Encode()
+	url2 := fmt.Sprintf("https://open.work.weixin.qq.com/wwopen/sso/qrConnect?appid=%s&agentid=%d&state=wework_redirect_xd&%s", wx.CorpID, wx.AgentId, redirectUri)
+	fmt.Println(url2)
+	c.Redirect(http.StatusMovedPermanently, url2)
 }

@@ -251,6 +251,12 @@
 			"revisionTime": "2017-09-29T03:49:55Z"
 		},
 		{
+			"checksumSHA1": "uf29R4zUiNF3mSoKNaKyntRJ/VQ=",
+			"path": "github.com/patrickmn/go-cache",
+			"revision": "46f407853014144407b6c2ec7ccc76bf67958d93",
+			"revisionTime": "2019-10-04T19:21:08Z"
+		},
+		{
 			"checksumSHA1": "Uy1A2Mv1zW4yURQdwvNpULvD7To=",
 			"origin": "go.mongodb.org/mongo-driver/vendor/github.com/pkg/errors",
 			"path": "github.com/pkg/errors",

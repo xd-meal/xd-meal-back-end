@@ -36,6 +36,7 @@ func InitRouter() *gin.Engine {
 		apiv1.POST("/EvalDish", v1.EvalDish)
 		apiv1.GET("/GetDishCode", v1.GetDishCode)
 		apiv1.POST("/ScanDishCode", v1.ScanDishCode)
+		apiv1.GET("/WeiXinLogin", v1.WeiXinLogin)
 	}
 	return r
 }

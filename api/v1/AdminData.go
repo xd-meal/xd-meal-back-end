@@ -56,7 +56,7 @@ func ReadMenu(c *gin.Context) {
 	}
 	file, _, err := c.Request.FormFile("file")
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"msg": err})
+		c.JSON(http.StatusBadRequest, gin.H{"msg": "文件错误"})
 		return
 	}
 	//选饭启动区间区间

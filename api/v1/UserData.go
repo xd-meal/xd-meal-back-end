@@ -7,6 +7,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/xd-meal-back-end/middleware/mongo"
+	"github.com/xd-meal-back-end/middleware/wx"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
@@ -244,4 +245,9 @@ func ScanDishCode(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"code": 200, "msg": "未到取餐时间", "data": ""})
 		return
 	}
+}
+
+func WeiXinLogin(c *gin.Context) {
+	accessToken := wx.GetAccessToken()
+	fmt.Println(accessToken)
 }

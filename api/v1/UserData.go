@@ -297,7 +297,7 @@ func WeiXinLogin(c *gin.Context) {
 		}
 		_ = json.Unmarshal([]byte(res2), &userInfo2)
 		if userInfo2["errmsg"] == "ok" {
-			user := mongo.UserMongo{}.FindOne(bson.M{"type": 3, "unique": userInfo2["userid"]})
+			user := mongo.UserMongo{}.FindOne(bson.M{"unique": userInfo2["userid"]})
 			if user == nil {
 				insert := mongo.UserMongo{ID: primitive.NewObjectID(), Name: userInfo2["name"], Email: userInfo2["email"],
 					PassWord: "", Type: 3, Depart: userInfo2["department"], CreateTime: time.Now(), Unique: userInfo2["userid"]}
@@ -314,7 +314,7 @@ func WeiXinLogin(c *gin.Context) {
 			})
 			return
 		}
-		user := mongo.UserMongo{}.FindOne(bson.M{"type": 3, "unique": userInfo2["userid"]})
+		user := mongo.UserMongo{}.FindOne(bson.M{"unique": userInfo2["userid"]})
 		//fmt.Println(user)
 		session := sessions.Default(c)
 		id, _ := json.Marshal(user["_id"])

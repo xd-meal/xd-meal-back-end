@@ -258,7 +258,7 @@ func GetQRCode(c *gin.Context) {
 	c.Redirect(http.StatusMovedPermanently, url2)
 }
 
-func WeiXinlogin(c *gin.Context) {
+func WeiXinLogin(c *gin.Context) {
 	code := c.Query("code")
 	if code == "" {
 		c.JSON(http.StatusBadRequest, gin.H{

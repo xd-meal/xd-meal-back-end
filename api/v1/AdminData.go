@@ -195,6 +195,7 @@ func (ud UserData) isAdminLogin(c *gin.Context) (interface{}, int32) {
 	logier := session.Get("logier")
 	roleType := session.Get("roleType").(int32)
 	if logier != "" {
+		fmt.Println(roleType)
 		return logier, roleType
 	} else {
 		return "", 0

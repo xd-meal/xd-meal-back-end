@@ -48,8 +48,8 @@ func Login(c *gin.Context) {
 		session.Set("email", param["email"])
 		session.Set("roleType", info["type"])
 		_ = session.Save()
-		fmt.Println("logier:", session.Get("logier"))
-		fmt.Println("email:", session.Get("email"))
+		//fmt.Println("logier:", session.Get("logier"))
+		//fmt.Println("email:", session.Get("email"))
 		c.JSON(http.StatusOK, gin.H{"code": 200, "msg": "登录成功"})
 	} else {
 		c.JSON(http.StatusOK, gin.H{"code": 0, "msg": "登录失败"})
@@ -203,9 +203,9 @@ func ScanDishCode(c *gin.Context) {
 		return
 	}
 	t := param["token"][0:1]
-	fmt.Println(t)
+	//fmt.Println(t)
 	token := param["token"][1:len(param["token"])]
-	fmt.Println(token)
+	//fmt.Println(token)
 	update := bson.M{"$set": bson.M{"status": 1}}
 	switch t {
 	case "A":
@@ -256,7 +256,7 @@ func GetQRCode(c *gin.Context) {
 	v.Add("redirect_uri", setting.AppSetting.Domain+wx.RedirectUri)
 	redirectUri := v.Encode()
 	url2 := fmt.Sprintf("https://open.work.weixin.qq.com/wwopen/sso/qrConnect?appid=%s&agentid=%d&state=wework_redirect_xd&%s", wx.CorpID, wx.AgentId, redirectUri)
-	fmt.Println(url2)
+	//fmt.Println(url2)
 	c.Redirect(http.StatusMovedPermanently, url2)
 }
 
@@ -272,7 +272,7 @@ func WeiXinLogin(c *gin.Context) {
 	}
 	accessToken := wx.WeiXin{}.GetAccessToken()
 	uri := fmt.Sprintf("https://qyapi.weixin.qq.com/cgi-bin/user/getuserinfo?access_token=%s&code=%s", accessToken, code)
-	fmt.Println(uri)
+	//fmt.Println(uri)
 	res, err := Function.HttpGet(uri)
 	if err != err {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -315,6 +315,7 @@ func WeiXinLogin(c *gin.Context) {
 			return
 		}
 		user := mongo.UserMongo{}.FindOne(bson.M{"type": 3, "unique": userInfo2["userid"]})
+		//fmt.Println(user)
 		session := sessions.Default(c)
 		id, _ := json.Marshal(user["_id"])
 		logier, _ := strconv.Unquote(string(id))

@@ -270,6 +270,7 @@ func WeiXinLogin(c *gin.Context) {
 	}
 	accessToken := wx.WeiXin{}.GetAccessToken()
 	uri := fmt.Sprintf("https://qyapi.weixin.qq.com/cgi-bin/user/getuserinfo?access_token=%s&code=%s", accessToken, code)
+	fmt.Println(uri)
 	res, err := Function.HttpGet(uri)
 	if err != err {
 		fmt.Println(err)

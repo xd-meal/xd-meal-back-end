@@ -10,6 +10,7 @@ import (
 	"github.com/xd-meal-back-end/middleware/mongo"
 	"github.com/xd-meal-back-end/middleware/wx"
 	"github.com/xd-meal-back-end/pkg/logging"
+	"github.com/xd-meal-back-end/pkg/setting"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
@@ -252,7 +253,7 @@ func ScanDishCode(c *gin.Context) {
 
 func GetQRCode(c *gin.Context) {
 	v := url.Values{}
-	v.Add("redirect_uri", wx.RedirectUri)
+	v.Add("redirect_uri", setting.AppSetting.Domain+wx.RedirectUri)
 	redirectUri := v.Encode()
 	url2 := fmt.Sprintf("https://open.work.weixin.qq.com/wwopen/sso/qrConnect?appid=%s&agentid=%d&state=wework_redirect_xd&%s", wx.CorpID, wx.AgentId, redirectUri)
 	fmt.Println(url2)
@@ -301,8 +302,9 @@ func WeiXinLogin(c *gin.Context) {
 				insert := mongo.UserMongo{ID: primitive.NewObjectID(), Name: userInfo2["name"], Email: userInfo2["email"],
 					PassWord: "", Type: 3, Depart: userInfo2["department"], CreateTime: time.Now(), Unique: userInfo2["userid"]}
 				insert.CreateRow()
+			} else {
+				fmt.Println(fmt.Sprintf("已注册用户：%s", userInfo2["userid"]))
 			}
-			fmt.Println(fmt.Sprintf("已注册用户：%s", userInfo2["userid"]))
 		} else {
 			logging.Error(fmt.Sprintf("扫码注册失败：%s", res2))
 			c.JSON(http.StatusInternalServerError, gin.H{
@@ -320,6 +322,6 @@ func WeiXinLogin(c *gin.Context) {
 		session.Set("email", user["email"])
 		session.Set("roleType", user["type"])
 		_ = session.Save()
-		c.JSON(http.StatusOK, gin.H{"code": 200, "msg": "success", "data": ""})
+		c.Redirect(http.StatusFound, setting.AppSetting.Domain)
 	}
 }

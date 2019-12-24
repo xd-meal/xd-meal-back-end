@@ -14,7 +14,7 @@ import (
 const CorpSecret = "tWk0PLidHSr-jcLJM73EKeQnSUq39RRTHX_AY_-6tIM"
 const CorpID = "wxe2be6e5c62e7b072"
 const AgentId = 1000033
-const RedirectUri = "http://meal.wcmoon.com/api/v1/WeiXinLogin"
+const RedirectUri = "/api/v1/WeiXinLogin"
 
 type WeiXin struct {
 }

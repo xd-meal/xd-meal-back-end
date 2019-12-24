@@ -11,6 +11,7 @@ type UserDishesMongo struct {
 	Uid       string             `json:"uid" bson:"uid"`               //用户id
 	DishId    string             `json:"dishId" bson:"dishId"`         //菜单id
 	Name      string             `json:"name" bson:"name"`             //菜品名称
+	Dsc       string             `json:"dsc" bson:"dsc"`               //菜品明细
 	Supplier  string             `json:"supplier" bson:"supplier"`     //供应商
 	TypeA     int32              `json:"typeA" bson:"typeA"`           //1-lunch 2-dinner 3-breakfast
 	MealDay   string             `json:"mealDay"  bson:"mealDay"`      //用餐日

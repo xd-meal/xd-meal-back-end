@@ -94,7 +94,7 @@ func ReadMenuExcel(r io.Reader) ([]mongo.DishesMongo, error) {
 					}
 					mealNum, _ := strconv.Atoi(v[3])
 					res[key] = mongo.DishesMongo{
-						ID: primitive.ObjectID{}, Name: v[0], Supplier: v[2], TypeA: TypeA, TypeB: typeB, MealDay: date, MealNum: mealNum, CreateTime: currentTime, UpdateTime: currentTime, Status: 0,
+						ID: primitive.ObjectID{}, Name: v[0], Dsc: v[1], Supplier: v[2], TypeA: TypeA, TypeB: typeB, MealDay: date, MealNum: mealNum, CreateTime: currentTime, UpdateTime: currentTime, Status: 0,
 					}
 					key++
 				}

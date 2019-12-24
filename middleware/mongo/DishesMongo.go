@@ -8,7 +8,8 @@ import (
 
 type DishesMongo struct {
 	ID         primitive.ObjectID `bson:"_id,omitempty"`
-	Name       string             `json:"name" bson:"name"`             //菜品名称
+	Name       string             `json:"name" bson:"name"` //菜品名称
+	Dsc        string             `json:"dsc" bson:"dsc"`
 	Supplier   string             `json:"supplier" bson:"supplier"`     //供应商
 	TypeA      int32              `json:"typeA" bson:"typeA"`           //1-lunch 2-dinner
 	TypeB      int32              `json:"typeB" bson:"typeB"`           //1-自助餐 2-简餐

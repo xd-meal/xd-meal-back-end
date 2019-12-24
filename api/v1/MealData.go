@@ -108,7 +108,7 @@ func OrderDishes(c *gin.Context) {
 	for _, v := range dishes {
 		id, _ := json.Marshal(v["_id"])
 		dishId, _ := strconv.Unquote(string(id))
-		insert := mongo.UserDishesMongo{ID: primitive.NewObjectID(), Uid: logier.(string), DishId: dishId, Name: v["name"].(string), Supplier: v["supplier"].(string),
+		insert := mongo.UserDishesMongo{ID: primitive.NewObjectID(), Uid: logier.(string), DishId: dishId, Name: v["name"].(string), Dsc: v["dsc"].(string), Supplier: v["supplier"].(string),
 			TypeA: v["typeA"].(int32), MealDay: v["mealDay"].(string), OrderTime: currentTime, BadEval: false}
 		insert.CreateRow()
 	}
@@ -188,7 +188,7 @@ func GetUserOrderSwitch(c *gin.Context) {
 	switches := mongo.Switches{}.FindOne(filter)
 	//开关控制
 	var data = false
-	if switches == nil || switches["enable"] == 0 {
+	if switches == nil || switches["enable"] == int32(0) {
 		c.JSON(http.StatusOK, gin.H{"code": 200, "msg": "success", "data": false})
 		return
 	}

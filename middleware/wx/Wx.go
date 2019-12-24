@@ -19,7 +19,7 @@ const RedirectUri = "http://meal.wcmoon.com"
 type WeiXin struct {
 }
 
-func (w *WeiXin) GetAccessToken() string {
+func (w WeiXin) GetAccessToken() string {
 	accessToken := ""
 	//一小时前
 	currentTime := time.Now()

@@ -273,8 +273,27 @@ func WeiXinLogin(c *gin.Context) {
 	fmt.Println(uri)
 	res, err := Function.HttpGet(uri)
 	if err != err {
-		fmt.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"code": 500,
+			"msg":  "获取用户ID失败",
+			"data": "",
+		})
+		return
 	} else {
-		fmt.Println(res)
+		var userInfo map[string]string
+		_ = json.Unmarshal([]byte(res), &userInfo)
+		userId := userInfo["UserId"]
+		uri2 := fmt.Sprintf("https://qyapi.weixin.qq.com/cgi-bin/user/get?access_token=%s&userid=%s", accessToken, userId)
+		res2, err2 := Function.HttpGet(uri2)
+		if err2 != err {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": 500,
+				"msg":  "获取用户信息失败",
+				"data": "",
+			})
+			return
+		}
+		fmt.Println(res2)
 	}
+	c.JSON(http.StatusOK, gin.H{"code": 200, "msg": "success", "data": ""})
 }

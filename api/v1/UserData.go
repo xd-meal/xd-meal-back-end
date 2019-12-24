@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/xd-meal-back-end/Function"
 	"github.com/xd-meal-back-end/middleware/mongo"
 	"github.com/xd-meal-back-end/middleware/wx"
 	"go.mongodb.org/mongo-driver/bson"
@@ -255,4 +256,24 @@ func GetQRCode(c *gin.Context) {
 	url2 := fmt.Sprintf("https://open.work.weixin.qq.com/wwopen/sso/qrConnect?appid=%s&agentid=%d&state=wework_redirect_xd&%s", wx.CorpID, wx.AgentId, redirectUri)
 	fmt.Println(url2)
 	c.Redirect(http.StatusMovedPermanently, url2)
+}
+
+func WeiXinlogin(c *gin.Context) {
+	code := c.Query("code")
+	if code == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code": 417,
+			"msg":  "参数不能为空",
+			"data": "",
+		})
+		return
+	}
+	accessToken := wx.WeiXin{}.GetAccessToken()
+	uri := fmt.Sprintf("https://qyapi.weixin.qq.com/cgi-bin/user/getuserinfo?access_token=%s&code=%s", accessToken, code)
+	res, err := Function.HttpGet(uri)
+	if err != err {
+		fmt.Println(err)
+	} else {
+		fmt.Println(res)
+	}
 }

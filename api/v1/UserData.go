@@ -9,6 +9,7 @@ import (
 	"github.com/xd-meal-back-end/Function"
 	"github.com/xd-meal-back-end/middleware/mongo"
 	"github.com/xd-meal-back-end/middleware/wx"
+	"github.com/xd-meal-back-end/pkg/logging"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
@@ -36,7 +37,7 @@ func Login(c *gin.Context) {
 		})
 		return
 	}
-	filter := bson.M{"email": param["email"], "password": fmt.Sprintf("%x", md5.Sum([]byte(param["password"])))}
+	filter := bson.M{"email": param["email"], "type": bson.M{"$in": []int{1, 2}}, "password": fmt.Sprintf("%x", md5.Sum([]byte(param["password"])))}
 	info := mongo.FindOneSelected(filter, "meal", "user")
 	if info != nil {
 		session := sessions.Default(c)
@@ -280,7 +281,7 @@ func WeiXinLogin(c *gin.Context) {
 		})
 		return
 	} else {
-		var userInfo map[string]string
+		var userInfo, userInfo2 map[string]string
 		_ = json.Unmarshal([]byte(res), &userInfo)
 		userId := userInfo["UserId"]
 		uri2 := fmt.Sprintf("https://qyapi.weixin.qq.com/cgi-bin/user/get?access_token=%s&userid=%s", accessToken, userId)
@@ -288,12 +289,37 @@ func WeiXinLogin(c *gin.Context) {
 		if err2 != err {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"code": 500,
+				"msg":  "调用用户接口失败",
+				"data": "",
+			})
+			return
+		}
+		_ = json.Unmarshal([]byte(res2), &userInfo2)
+		if userInfo2["errmsg"] == "ok" {
+			user := mongo.UserMongo{}.FindOne(bson.M{"type": 3, "unique": userInfo2["userid"]})
+			if user == nil {
+				insert := mongo.UserMongo{ID: primitive.NewObjectID(), Name: userInfo2["name"], Email: userInfo2["email"],
+					PassWord: "", Type: 3, Depart: userInfo2["department"], CreateTime: time.Now(), Unique: userInfo2["userid"]}
+				insert.CreateRow()
+			}
+			fmt.Println(fmt.Sprintf("已注册用户：%s", userInfo2["userid"]))
+		} else {
+			logging.Error(fmt.Sprintf("扫码注册失败：%s", res2))
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": 500,
 				"msg":  "获取用户信息失败",
 				"data": "",
 			})
 			return
 		}
-		fmt.Println(res2)
+		user := mongo.UserMongo{}.FindOne(bson.M{"type": 3, "unique": userInfo2["userid"]})
+		session := sessions.Default(c)
+		id, _ := json.Marshal(user["_id"])
+		logier, _ := strconv.Unquote(string(id))
+		session.Set("logier", logier)
+		session.Set("email", user["email"])
+		session.Set("roleType", user["type"])
+		_ = session.Save()
+		c.JSON(http.StatusOK, gin.H{"code": 200, "msg": "success", "data": ""})
 	}
-	c.JSON(http.StatusOK, gin.H{"code": 200, "msg": "success", "data": ""})
 }

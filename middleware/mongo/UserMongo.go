@@ -11,9 +11,10 @@ type UserMongo struct {
 	Name       string             `json:"name" bson:"name"`
 	Email      string             `json:"email" bson:"email"`
 	PassWord   string             `json:"password" bson:"password"` //登录密码
-	Type       int                `json:"type" bson:"type"`
+	Type       int                `json:"type" bson:"type"`         //1-管理员 2-外部用户 3-微信用户
 	Depart     string             `json:"depart" bson:"depart"`
 	CreateTime time.Time          `json:"createTime" bson:"createTime"` //创建时间
+	Unique     string             `json:"unique" bson:"unique"`         //导入用户填邮箱，微信用户填userid
 }
 
 func (d UserMongo) CreateRow() interface{} {

@@ -36,7 +36,7 @@ func ImportUser(c *gin.Context) {
 	data, err := middleware.ImportUser(file)
 	for _, v := range data {
 		insert := mongo.UserMongo{ID: primitive.NewObjectID(), Name: v.Name, Email: v.Email,
-			PassWord: fmt.Sprintf("%x", md5.Sum([]byte(v.PassWord))), Type: v.Type, Depart: v.Depart, CreateTime: v.CreateTime}
+			PassWord: fmt.Sprintf("%x", md5.Sum([]byte(v.PassWord))), Type: v.Type, Depart: v.Depart, CreateTime: v.CreateTime, Unique: v.Email}
 		insert.CreateRow()
 	}
 	c.JSON(http.StatusOK, gin.H{"msg": err, "data": data})

@@ -3,11 +3,9 @@ package wx
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/xd-meal-back-end/Function"
 	"github.com/xd-meal-back-end/middleware/mongo"
-	"github.com/xd-meal-back-end/pkg/logging"
 	"go.mongodb.org/mongo-driver/bson"
-	"io/ioutil"
-	"net/http"
 	"time"
 )
 
@@ -27,26 +25,14 @@ func (w WeiXin) GetAccessToken() string {
 	h1 := currentTime.Add(h)
 	exist := mongo.AccessToken{}.FindOne(bson.M{"updateTime": bson.M{"$gte": h1}})
 	if exist == nil {
-		client := &http.Client{}
+
 		url2 := fmt.Sprintf("https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=%s&corpsecret=%s", CorpID, CorpSecret)
-		request, err := http.NewRequest("GET", url2, nil)
-		response, err := client.Do(request)
-		if err != nil {
-			logging.Error(err)
-		}
-		defer response.Body.Close()
-		if response.StatusCode == 200 {
-			r, err := ioutil.ReadAll(response.Body)
-			if err != nil {
-				logging.Error(err)
-			}
+		res, err := Function.HttpGet(url2)
+		if err == nil {
 			acc := map[string]string{}
-			_ = json.Unmarshal(r, &acc)
+			_ = json.Unmarshal([]byte(res), &acc)
 			accessToken = acc["access_token"]
 			mongo.AccessToken{}.UpdateAll(bson.M{"name": "accessToken"}, bson.M{"$set": bson.M{"token": accessToken, "updateTime": currentTime}})
-		} else {
-			logging.Error(fmt.Sprintf("url:%s;return:%v", url2, response))
-			accessToken = ""
 		}
 	} else {
 		accessToken = exist["token"].(string)

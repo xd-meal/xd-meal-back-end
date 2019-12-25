@@ -23,6 +23,6 @@ func HttpGet(url string) (string, error) {
 		return "", err
 	}
 	timeEnd := time.Now()
-	logging.Info(fmt.Sprintf("httpGet : (url: %s code: %s, response body: %s, elaspsed time:%d s)", url, resp.Status, string(body), timeEnd.Sub(timeStart)))
+	logging.Info(fmt.Sprintf("httpGet : (url: %s code: %s, response body: %s, elaspsed time:%s)", url, resp.Status, string(body), timeEnd.Sub(timeStart)))
 	return string(body), nil
 }

@@ -27,3 +27,10 @@ func (d DishesMongo) CreateRow() interface{} {
 func (d DishesMongo) FindAll(filter bson.M) []bson.M {
 	return FindAllSelected(filter, "meal", "dishes")
 }
+
+//可选的自助餐
+func (d DishesMongo) GetOptionalBuffet() []bson.M {
+	switches := Switches{}.FindOne(bson.M{"name": "order"})
+	filter2 := bson.M{"mealDay": bson.M{"$gte": switches["startMealDay"], "$lte": switches["endMealDay"]}, "typeB": int32(1)}
+	return d.FindAll(filter2)
+}

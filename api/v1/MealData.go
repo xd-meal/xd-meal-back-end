@@ -109,7 +109,7 @@ func OrderDishes(c *gin.Context) {
 		id, _ := json.Marshal(v["_id"])
 		dishId, _ := strconv.Unquote(string(id))
 		insert := mongo.UserDishesMongo{ID: primitive.NewObjectID(), Uid: logier.(string), DishId: dishId, Name: v["name"].(string), Dsc: v["dsc"].(string), Supplier: v["supplier"].(string),
-			TypeA: v["typeA"].(int32), MealDay: v["mealDay"].(string), OrderTime: currentTime, BadEval: false}
+			TypeA: v["typeA"].(int32), MealDay: v["mealDay"].(string), OrderTime: currentTime, BadEval: false, MealNum: v["mealNum"].(int32)}
 		insert.CreateRow()
 	}
 

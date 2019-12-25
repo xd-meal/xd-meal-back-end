@@ -2,6 +2,7 @@ package v1
 
 import (
 	"crypto/md5"
+	"encoding/json"
 	"fmt"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -13,6 +14,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -200,4 +202,62 @@ func (ud UserData) isAdminLogin(c *gin.Context) (interface{}, int32) {
 	} else {
 		return "", 0
 	}
+}
+
+func GetUserByEmail(c *gin.Context) {
+	//登录验证
+	logier, roleType := UserData{}.isAdminLogin(c)
+	if logier == nil || roleType != 1 {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 0, "msg": "没有权限", "data": "",
+		})
+		return
+	}
+	email := c.Query("email")
+	if email == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code": 0, "msg": "邮箱不能为空", "data": "",
+		})
+		return
+	}
+	filter := bson.M{"email": email}
+	res := mongo.UserMongo{}.FindOne(filter)
+	data := map[string]interface{}{"id": res["_id"], "name": res["name"].(string), "email": res["email"].(string)}
+	c.JSON(http.StatusOK, gin.H{"code": 200, "msg": "success", "data": data})
+}
+
+func AddMenuSingle(c *gin.Context) {
+	//登录验证
+	logier, roleType := UserData{}.isAdminLogin(c)
+	if logier == nil || roleType != 1 {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 0, "msg": "没有权限", "data": "",
+		})
+		return
+	}
+	var param map[string]string
+	err := c.BindJSON(&param)
+	if err != nil || param["uid"] == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code": 0, "msg": "用户id不能为空", "data": "",
+		})
+		return
+	}
+	uid := param["uid"]
+
+	res := mongo.DishesMongo{}.GetOptionalBuffet()
+	currentTime := time.Now()
+	for _, v := range res {
+		id, _ := json.Marshal(v["_id"])
+		dishId, _ := strconv.Unquote(string(id))
+		insert := mongo.UserDishesMongo{ID: primitive.NewObjectID(), Uid: uid, DishId: dishId, Name: v["name"].(string), Dsc: v["dsc"].(string), Supplier: v["supplier"].(string), MealNum: v["mealNum"].(int32),
+			TypeA: v["typeA"].(int32), MealDay: v["mealDay"].(string), OrderTime: currentTime, BadEval: false}
+
+		insert.CreateRow()
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": 200,
+		"msg":  e.GetMsg(200),
+		"data": "",
+	})
 }

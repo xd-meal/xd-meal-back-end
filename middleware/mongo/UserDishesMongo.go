@@ -15,7 +15,7 @@ type UserDishesMongo struct {
 	Supplier  string             `json:"supplier" bson:"supplier"`     //供应商
 	TypeA     int32              `json:"typeA" bson:"typeA"`           //1-lunch 2-dinner 3-breakfast
 	MealDay   string             `json:"mealDay"  bson:"mealDay"`      //用餐日
-	MealNum   int                `json:"mealNum" bson:"mealNum"`       //菜品编号
+	MealNum   int32              `json:"mealNum" bson:"mealNum"`       //菜品编号
 	OrderTime time.Time          `json:"updateTime" bson:"updateTime"` //订餐时间
 	Status    int32              `json:"status" bson:"status"`         //0-订餐 1-取餐
 	BadEval   bool               `json:"badEval" bson:"badEval"`       //差评

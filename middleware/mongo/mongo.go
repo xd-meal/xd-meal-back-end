@@ -103,6 +103,31 @@ func (o *MongoUtils) FindMore(col string, filter bson.M) ([]bson.M, error) {
 	return resultArr, nil
 }
 
+func (o *MongoUtils) FindMoreByPipe(col string, pipe []bson.M) ([]bson.M, error) {
+	if o.Db == nil || o.Con == nil {
+		return nil, fmt.Errorf("没有初始化连接和数据库信息！")
+	}
+	table := o.Db.Collection(col)
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, _ = context.WithTimeout(context.Background(), 5*time.Second)
+	cur, err2 := table.Aggregate(ctx, pipe)
+	if err2 != nil {
+		fmt.Print(err2)
+		return nil, err2
+	}
+	defer cur.Close(ctx)
+	var resultArr []bson.M
+	for cur.Next(ctx) {
+		var result bson.M
+		err3 := cur.Decode(&result)
+		if err3 != nil {
+			return nil, err3
+		}
+		resultArr = append(resultArr, result)
+	}
+	return resultArr, nil
+}
+
 func createRow(insert interface{}, dbName string, tableName string) interface{} {
 	utils := MongoUtils{}
 	utils.OpenConn()
@@ -158,6 +183,17 @@ func UpdateAll(filter bson.M, update bson.M, dbName string, tableName string) in
 	utils.OpenConn()
 	utils.SetDb(dbName)
 	result, err := utils.UpdateAll(tableName, filter, update)
+	if err != nil {
+		logging.Info(err)
+	}
+	return result
+}
+
+func FindByPipe(pipe []bson.M, dbName string, tableName string) []bson.M {
+	utils := MongoUtils{}
+	utils.OpenConn()
+	utils.SetDb(dbName)
+	result, err := utils.FindMoreByPipe(tableName, pipe)
 	if err != nil {
 		logging.Info(err)
 	}

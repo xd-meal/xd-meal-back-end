@@ -649,3 +649,41 @@ POST-application/json
     "msg": "ok"
 }
 ```
+
+## 本次选餐统计
+> 请求方式
+```
+GET
+```
+> 路由
+```
+/api/v1/GetMealTotal
+```
+> 入参
+
+无
+
+> 出参
+```
+{
+    "code": 200,
+    "data": [
+        {
+            "_id": "健康水果轻食",
+            "supplier": "多点沙拉",
+            "total": 1
+        },
+        {
+            "_id": "爆炒子姜鸭",
+            "supplier": "红采餐饮",
+            "total": 1
+        },
+        {
+            "_id": "自助餐",
+            "supplier": "园沁餐厅",
+            "total": 14
+        }
+    ],
+    "msg": "ok"
+}
+```

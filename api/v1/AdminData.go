@@ -261,3 +261,12 @@ func AddMenuSingle(c *gin.Context) {
 		"data": "",
 	})
 }
+
+func GetMealTotal(c *gin.Context) {
+	res := mongo.UserDishesMongo{}.GetTotalByOrdered()
+	c.JSON(http.StatusOK, gin.H{
+		"code": 200,
+		"msg":  e.GetMsg(200),
+		"data": res,
+	})
+}

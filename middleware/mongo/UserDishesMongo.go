@@ -43,3 +43,16 @@ func (d UserDishesMongo) GetUserDishesByOrdered(uid string) []bson.M {
 	filter2 := bson.M{"uid": uid, "mealDay": bson.M{"$gte": switches["startMealDay"], "$lte": switches["endMealDay"]}, "typeA": bson.M{"$in": []int32{1, 2}}}
 	return d.FindAll(filter2)
 }
+
+func (d UserDishesMongo) GetTotalByOrdered() []bson.M {
+	switches := Switches{}.FindOne(bson.M{"name": "order"})
+	pipeline := []bson.M{
+		{
+			"$match": bson.M{"mealDay": bson.M{"$gte": switches["startMealDay"], "$lte": switches["endMealDay"]}},
+		},
+		{
+			"$group": bson.M{"_id": "$name", "supplier": bson.M{"$first": "$supplier"}, "total": bson.M{"$sum": 1}},
+		},
+	}
+	return FindByPipe(pipeline, "meal", "userDishes")
+}

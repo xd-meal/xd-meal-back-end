@@ -201,3 +201,24 @@ func GetMealTotal(c *gin.Context) {
 		"data": res,
 	})
 }
+
+/**
+后台重置密码
+*/
+func ResetPassword(c *gin.Context) {
+	var param map[string]string
+	err := c.BindJSON(&param)
+	if err != nil || param["uid"] == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code": 0, "msg": "用户id不能为空", "data": "",
+		})
+		return
+	}
+	uid := param["uid"]
+	mongo.UserMongo{}.ResetPassWord(uid)
+	c.JSON(http.StatusOK, gin.H{
+		"code": 200,
+		"msg":  "重置密码成功",
+		"data": nil,
+	})
+}

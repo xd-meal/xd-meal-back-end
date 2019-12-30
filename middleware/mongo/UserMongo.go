@@ -1,6 +1,8 @@
 package mongo
 
 import (
+	"crypto/md5"
+	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
@@ -27,4 +29,11 @@ func (d UserMongo) UpdateAll(filter, update bson.M) int64 {
 
 func (d UserMongo) FindOne(filter bson.M) bson.M {
 	return FindOneSelected(filter, "meal", "user")
+}
+
+func (d UserMongo) ResetPassWord(uid string) int64 {
+	id, _ := primitive.ObjectIDFromHex(uid)
+	filter := bson.M{"_id": id}
+	update := bson.M{"$set": bson.M{"password": fmt.Sprintf("%x", md5.Sum([]byte("xd123456")))}}
+	return UserMongo{}.UpdateAll(filter, update)
 }

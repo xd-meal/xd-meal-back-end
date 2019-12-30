@@ -51,6 +51,7 @@ func InitRouter() *gin.Engine {
 		apiadmin.GET("/GetMealTotal", v1.GetMealTotal)            //根据菜品统计订餐数量
 		apiadmin.POST("/EnableOrderSwitch", v1.EnableOrderSwitch) //开启&关闭订餐开关
 		apiadmin.GET("/GetOrderSwitch", v1.GetOrderSwitch)        //获取订餐开关状态
+		apiadmin.POST("/ResetPassword", v1.ResetPassword)         //后台根据id重置密码
 	}
 	return r
 }

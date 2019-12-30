@@ -4,7 +4,6 @@ import (
 	"crypto/md5"
 	"encoding/json"
 	"fmt"
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/wxnacy/wgo/arrays"
 	"github.com/xd-meal-back-end/Function"
@@ -22,14 +21,6 @@ import (
 导入外部用户
 */
 func ImportUser(c *gin.Context) {
-	//登录验证
-	logier, roleType := UserData{}.isAdminLogin(c)
-	if logier == nil || roleType != 1 {
-		c.JSON(http.StatusOK, gin.H{
-			"code": 0, "msg": "没有权限", "data": "",
-		})
-		return
-	}
 	file, _, err := c.Request.FormFile("file")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"msg": err})
@@ -48,14 +39,6 @@ func ImportUser(c *gin.Context) {
 预览菜单
 */
 func ReadMenu(c *gin.Context) {
-	//登录验证
-	logier, roleType := UserData{}.isAdminLogin(c)
-	if logier == nil || roleType != 1 {
-		c.JSON(http.StatusOK, gin.H{
-			"code": 0, "msg": "没有权限", "data": "",
-		})
-		return
-	}
 	file, _, err := c.Request.FormFile("file")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"msg": "文件错误"})
@@ -76,14 +59,6 @@ func ReadMenu(c *gin.Context) {
 导入菜单
 */
 func ImportMenu(c *gin.Context) {
-	//登录验证
-	logier, roleType := UserData{}.isAdminLogin(c)
-	if logier == nil || roleType != 1 {
-		c.JSON(http.StatusOK, gin.H{
-			"code": 0, "msg": "没有权限", "data": "",
-		})
-		return
-	}
 	var param map[string][]mongo.DishesMongo
 	err := c.BindJSON(&param)
 	if err != nil {
@@ -134,14 +109,6 @@ func ImportMenu(c *gin.Context) {
 }
 
 func EnableOrderSwitch(c *gin.Context) {
-	//登录验证
-	logier, roleType := UserData{}.isAdminLogin(c)
-	if logier == nil || roleType != 1 {
-		c.JSON(http.StatusOK, gin.H{
-			"code": 0, "msg": "没有权限", "data": "",
-		})
-		return
-	}
 	var param map[string]int
 	err := c.BindJSON(&param)
 	if err != nil || arrays.Contains([]int{0, 1}, param["enable"]) == -1 {
@@ -173,14 +140,6 @@ func EnableOrderSwitch(c *gin.Context) {
 }
 
 func GetOrderSwitch(c *gin.Context) {
-	//登录验证
-	logier, roleType := UserData{}.isAdminLogin(c)
-	if logier == nil || roleType != 1 {
-		c.JSON(http.StatusOK, gin.H{
-			"code": 0, "msg": "没有权限", "data": "",
-		})
-		return
-	}
 	filter := bson.M{"name": "order"}
 	res := mongo.Switches{}.FindOne(filter)
 	var data bool
@@ -192,27 +151,7 @@ func GetOrderSwitch(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"code": 200, "msg": "success", "data": data})
 }
 
-func (ud UserData) isAdminLogin(c *gin.Context) (interface{}, int32) {
-	session := sessions.Default(c)
-	logier := session.Get("logier")
-	roleType := session.Get("roleType").(int32)
-	if logier != "" {
-		fmt.Println(roleType)
-		return logier, roleType
-	} else {
-		return "", 0
-	}
-}
-
 func GetUserByEmail(c *gin.Context) {
-	//登录验证
-	logier, roleType := UserData{}.isAdminLogin(c)
-	if logier == nil || roleType != 1 {
-		c.JSON(http.StatusOK, gin.H{
-			"code": 0, "msg": "没有权限", "data": "",
-		})
-		return
-	}
 	email := c.Query("email")
 	if email == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -227,14 +166,6 @@ func GetUserByEmail(c *gin.Context) {
 }
 
 func AddMenuSingle(c *gin.Context) {
-	//登录验证
-	logier, roleType := UserData{}.isAdminLogin(c)
-	if logier == nil || roleType != 1 {
-		c.JSON(http.StatusOK, gin.H{
-			"code": 0, "msg": "没有权限", "data": "",
-		})
-		return
-	}
 	var param map[string]string
 	err := c.BindJSON(&param)
 	if err != nil || param["uid"] == "" {

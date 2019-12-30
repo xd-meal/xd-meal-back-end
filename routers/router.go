@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	v1 "github.com/xd-meal-back-end/api/v1"
 	_ "github.com/xd-meal-back-end/docs"
+	"github.com/xd-meal-back-end/middleware/auth"
 )
 
 // InitRouter initialize routing information
@@ -16,31 +17,40 @@ func InitRouter() *gin.Engine {
 	//设置session midddleware
 	store := cookie.NewStore([]byte("secret"))
 	r.Use(sessions.Sessions("mysession", store))
+	//登录接口
+	r.POST("/api/v1/Login", v1.Login)
+	r.POST("/api/v1/LoginOut", v1.LoginOut)
+	r.GET("/api/v1/GetQRCode", v1.GetQRCode)
+	r.GET("/api/v1/WeiXinLogin", v1.WeiXinLogin)
+	r.GET("/api/v1/CheckUserLogin", v1.CheckUserLogin)
+	//pos机接口
+	r.POST("/api/v1/ScanDishCode", v1.ScanDishCode)
+	//用户接口
 	apiv1 := r.Group("/api/v1")
+	apiv1.Use(auth.CheckAuth())
 	{
-		apiv1.POST("/ImportUser", v1.ImportUser)
 		apiv1.GET("/GetDishes", v1.GetDishes)
-		apiv1.GET("/DownloadMenu", v1.DownloadMenu)
-		apiv1.POST("/ReadMenu", v1.ReadMenu)
-		apiv1.POST("/ImportMenu", v1.ImportMenu)
 		apiv1.POST("/OrderDishes", v1.OrderDishes)
-		apiv1.POST("/Login", v1.Login)
-		apiv1.POST("/LoginOut", v1.LoginOut)
-		apiv1.POST("/CheckUserLogin", v1.CheckUserLogin)
 		apiv1.GET("/GetOrderDishes", v1.GetOrderDishes)
 		apiv1.POST("/UpdateUserOrder", v1.UpdateUserOrder)
-		apiv1.GET("/GetOrderSwitch", v1.GetOrderSwitch)
-		apiv1.POST("/EnableOrderSwitch", v1.EnableOrderSwitch)
 		apiv1.GET("/GetUserOrderSwitch", v1.GetUserOrderSwitch)
 		apiv1.POST("/ResetPasswordByUser", v1.ResetPasswordByUser)
-		apiv1.POST("/EvalDish", v1.EvalDish)
 		apiv1.GET("/GetDishCode", v1.GetDishCode)
-		apiv1.POST("/ScanDishCode", v1.ScanDishCode)
-		apiv1.GET("/GetQRCode", v1.GetQRCode)
-		apiv1.GET("/WeiXinLogin", v1.WeiXinLogin)
-		apiv1.GET("/GetUserByEmail", v1.GetUserByEmail)
-		apiv1.POST("/AddMenuSingle", v1.AddMenuSingle)
-		apiv1.GET("/GetMealTotal", v1.GetMealTotal)
+		apiv1.POST("/EvalDish", v1.EvalDish)
+	}
+	//后台接口
+	apiadmin := r.Group("/api/v1")
+	apiadmin.Use(auth.CheckAdminAuth())
+	{
+		apiadmin.POST("/ImportUser", v1.ImportUser)               //导入外部用户
+		apiadmin.GET("/DownloadMenu", v1.DownloadMenu)            //下载菜单模版
+		apiadmin.POST("/ImportMenu", v1.ImportMenu)               //导入下周菜单
+		apiadmin.POST("/ReadMenu", v1.ReadMenu)                   //预览导入
+		apiadmin.GET("/GetUserByEmail", v1.GetUserByEmail)        //根据邮箱获取用户信息
+		apiadmin.POST("/AddMenuSingle", v1.AddMenuSingle)         //单独加菜
+		apiadmin.GET("/GetMealTotal", v1.GetMealTotal)            //根据菜品统计订餐数量
+		apiadmin.POST("/EnableOrderSwitch", v1.EnableOrderSwitch) //开启&关闭订餐开关
+		apiadmin.GET("/GetOrderSwitch", v1.GetOrderSwitch)        //获取订餐开关状态
 	}
 	return r
 }

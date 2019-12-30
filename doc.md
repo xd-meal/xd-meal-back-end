@@ -48,6 +48,26 @@ POST-application/json
 }
 ```
 
+## 检查用户是否登录
+> 请求方式
+```
+GET
+```
+> 路由
+```
+/api/v1/CheckUserLogin
+```
+> 入参
+
+> 出参
+```
+{
+    "code": 200,
+    "data": "5e09b5f57d469f1dd46dc5e8",
+    "msg": "已登陆"
+}
+```
+
 
 ## 获取每周菜品
 > 请求方式

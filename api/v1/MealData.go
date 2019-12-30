@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/xd-meal-back-end/middleware"
+	"github.com/xd-meal-back-end/middleware/auth"
 	"github.com/xd-meal-back-end/middleware/mongo"
 	"github.com/xd-meal-back-end/pkg/e"
 	"go.mongodb.org/mongo-driver/bson"
@@ -36,16 +37,6 @@ func DownloadMenu(c *gin.Context) {
 获取可选菜单表
 */
 func GetDishes(c *gin.Context) {
-	//登录验证
-	logier := UserData{}.isLogin(c)
-	if logier == nil {
-		c.JSON(http.StatusOK, gin.H{
-			"code": 0,
-			"msg":  "请先登录",
-			"data": "",
-		})
-		return
-	}
 	//选饭启动区间区间
 	filterSwitch := bson.M{"name": "order", "enable": 1}
 	switches := mongo.Switches{}.FindOne(filterSwitch)
@@ -67,17 +58,7 @@ func GetDishes(c *gin.Context) {
 用户点餐
 */
 func OrderDishes(c *gin.Context) {
-	//登录验证
-	logier := UserData{}.isLogin(c)
-	if logier == nil {
-		c.JSON(http.StatusOK, gin.H{
-			"code": 0,
-			"msg":  "请先登录",
-			"data": "",
-		})
-		return
-	}
-
+	logier := auth.UserAuth{}.IsLogin(c)
 	var param map[string][]string
 	err := c.BindJSON(&param)
 	if err != nil || param["dishIds"] == nil {
@@ -121,16 +102,7 @@ func OrderDishes(c *gin.Context) {
 }
 
 func GetOrderDishes(c *gin.Context) {
-	//登录验证
-	logier := UserData{}.isLogin(c)
-	if logier == nil {
-		c.JSON(http.StatusOK, gin.H{
-			"code": 0,
-			"msg":  "请先登录",
-			"data": "",
-		})
-		return
-	}
+	logier := auth.UserAuth{}.IsLogin(c)
 	userDishes := mongo.UserDishesMongo{}.GetUserDishesByOrdered(logier.(string))
 
 	//ArrayColumn
@@ -149,16 +121,10 @@ func GetOrderDishes(c *gin.Context) {
 	})
 }
 
+/**
+好像没用到了
+*/
 func UpdateUserOrder(c *gin.Context) {
-	logier := UserData{}.isLogin(c)
-	if logier == nil {
-		c.JSON(http.StatusOK, gin.H{
-			"code": 0,
-			"msg":  "请先登录",
-			"data": "",
-		})
-		return
-	}
 	dish := mongo.UserDishesMongo{}
 	//objId, _ := primitive.ObjectIDFromHex("5dea01d126a606122cf74d8b")
 	filter := bson.M{"uid": "de4db7a7cfb83e4f6a61a25"}
@@ -174,16 +140,7 @@ func UpdateUserOrder(c *gin.Context) {
 }
 
 func GetUserOrderSwitch(c *gin.Context) {
-	logier := UserData{}.isLogin(c)
-	if logier == nil {
-		c.JSON(http.StatusOK, gin.H{
-			"code": 0,
-			"msg":  "请先登录",
-			"data": "",
-		})
-		return
-	}
-
+	logier := auth.UserAuth{}.IsLogin(c)
 	filter := bson.M{"name": "order"}
 	switches := mongo.Switches{}.FindOne(filter)
 	//开关控制

@@ -7,6 +7,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/xd-meal-back-end/Function"
+	"github.com/xd-meal-back-end/middleware/auth"
 	"github.com/xd-meal-back-end/middleware/mongo"
 	"github.com/xd-meal-back-end/middleware/wx"
 	"github.com/xd-meal-back-end/pkg/logging"
@@ -18,9 +19,6 @@ import (
 	"strconv"
 	"time"
 )
-
-type UserData struct {
-}
 
 type RequestEvalDish struct {
 	ID   string `json:"id" form:"name"`
@@ -65,32 +63,15 @@ func LoginOut(c *gin.Context) {
 }
 
 func CheckUserLogin(c *gin.Context) {
-	logier := UserData{}.isLogin(c)
+	logier := auth.UserAuth{}.IsLogin(c)
 	if logier != nil {
-		c.JSON(http.StatusOK, gin.H{"code": 200, "msg": "已登陆", "data": logier})
+		c.JSON(http.StatusOK, gin.H{"code": 200, "msg": "已登录", "data": logier})
 	} else {
 		c.JSON(http.StatusOK, gin.H{"code": 0, "msg": "未登录"})
 	}
 }
 
-func (ud UserData) isLogin(c *gin.Context) interface{} {
-	session := sessions.Default(c)
-	logier := session.Get("logier")
-	if logier != nil {
-		return logier
-	} else {
-		return nil
-	}
-}
-
 func ResetPasswordByUser(c *gin.Context) {
-	logier := UserData{}.isLogin(c)
-	if logier == nil {
-		c.JSON(http.StatusOK, gin.H{
-			"code": 0, "msg": "请先登录", "data": "",
-		})
-		return
-	}
 	var param map[string]string
 	err := c.BindJSON(&param)
 	if err != nil || param["password"] == "" || param["oldPassword"] == "" {
@@ -101,6 +82,7 @@ func ResetPasswordByUser(c *gin.Context) {
 		})
 		return
 	}
+	logier := auth.UserAuth{}.IsLogin(c)
 	id, _ := primitive.ObjectIDFromHex(logier.(string))
 	checkUser := mongo.UserMongo{}.FindOne(bson.M{"_id": id, "password": fmt.Sprintf("%x", md5.Sum([]byte(param["oldPassword"])))})
 	if checkUser == nil {
@@ -123,13 +105,6 @@ func ResetPasswordByUser(c *gin.Context) {
 }
 
 func EvalDish(c *gin.Context) {
-	logier := UserData{}.isLogin(c)
-	if logier == nil {
-		c.JSON(http.StatusOK, gin.H{
-			"code": 0, "msg": "请先登录", "data": "",
-		})
-		return
-	}
 	param := RequestEvalDish{}
 	if c.ShouldBind(&param) != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -138,7 +113,7 @@ func EvalDish(c *gin.Context) {
 		return
 	}
 	id, _ := primitive.ObjectIDFromHex(param.ID)
-	uid := logier
+	uid := auth.UserAuth{}.IsLogin(c)
 	filter := bson.M{"_id": id, "uid": uid}
 	dish := mongo.UserDishesMongo{}.FindOne(filter)
 	if dish == nil {
@@ -151,13 +126,7 @@ func EvalDish(c *gin.Context) {
 }
 
 func GetDishCode(c *gin.Context) {
-	logier := UserData{}.isLogin(c)
-	if logier == nil {
-		c.JSON(http.StatusOK, gin.H{
-			"code": 0, "msg": "请先登录", "data": "",
-		})
-		return
-	}
+	logier := auth.UserAuth{}.IsLogin(c)
 	currentTime := time.Now()
 	breakfastStartTime := time.Date(currentTime.Year(), currentTime.Month(), currentTime.Day(), 8, 30, 0, 0, currentTime.Location())
 	breakfastEndTime := time.Date(currentTime.Year(), currentTime.Month(), currentTime.Day(), 10, 0, 0, 0, currentTime.Location())
